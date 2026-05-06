@@ -181,6 +181,7 @@ tr:hover td{background:rgba(45,125,210,0.05)}
       <div class="topbar-sub">Mendoza 990 · Escuela 187 "Miguel Goyena"</div>
     </div>
     <div class="topbar-right">
+      <span id="topbar-usuario" style="font-size:12px;color:var(--text2)"></span>
       <span class="sync-dot">● En línea</span>
       <button class="btn btn-sm" onclick="logout()">Salir</button>
     </div>
@@ -410,7 +411,11 @@ async function fbSet(coleccion, data) {
 // ════════════════════════════════════
 // CONSTANTES
 // ════════════════════════════════════
-const PASSWORD = 'Thiago12';
+const USUARIOS = {
+  'Thiago12': { nombre: 'Administradora', rol: 'admin' },
+  'Ludmi1234': { nombre: 'Ludmila', rol: 'secretaria' }
+};
+let usuarioActual = null;
 const MONTO_BASE = 70000;
 const RECARGO_STD = 5000;
 const CUOTAS_POR_AÑO = 11;
@@ -436,14 +441,18 @@ const guardarNro     = () => fbSet('config', { nro: nroComprobante });
 async function login() {
   const v = document.getElementById('inp-pass').value;
   const err = document.getElementById('pass-error');
-  if(v !== PASSWORD) { err.textContent = 'Contraseña incorrecta.'; return; }
+  const usuario = USUARIOS[v];
+  if(!usuario) { err.textContent = 'Contraseña incorrecta.'; return; }
   err.textContent = 'Cargando...';
+  usuarioActual = usuario;
   await cargarDatos();
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
+  document.getElementById('topbar-usuario').textContent = '👤 ' + usuario.nombre;
   renderDashboard();
 }
 function logout() {
+  usuarioActual = null;
   document.getElementById('app').style.display = 'none';
   document.getElementById('login-screen').style.display = 'block';
   document.getElementById('inp-pass').value = '';
@@ -591,13 +600,14 @@ function renderAlumnos() {
       <td><span class="badge-carrera">${a.carrera}</span></td>
       <td><span class="badge-año">${a.año}° año</span></td>
       <td><button class="btn btn-sm" onclick="verDetalle('${a.id}')">Ver (${pagas}/${a.año*CUOTAS_POR_AÑO})</button></td>
-      <td><button class="btn btn-danger btn-sm" onclick="eliminarAlumno('${a.id}')">Eliminar</button></td>
+      <td>${usuarioActual?.rol==='admin'?`<button class="btn btn-danger btn-sm" onclick="eliminarAlumno('${a.id}')">Eliminar</button>`:''}</td>
     </tr>`;
   }).join('');
 }
 window.renderAlumnos = renderAlumnos;
 
 async function eliminarAlumno(id) {
+  if(usuarioActual?.rol !== 'admin') { alert('Solo la administradora puede eliminar alumnos.'); return; }
   if(!confirm('¿Eliminar este alumno y todos sus pagos?'))return;
   alumnos=alumnos.filter(a=>a.id!==id);
   pagos=pagos.filter(p=>p.alumnoId!==id);
@@ -696,12 +706,13 @@ function renderUltimosCobros() {
     <td style="font-weight:500">${fmt(p.total||0)}</td>
     <td style="display:flex;gap:4px">
       <button class="btn btn-sm" onclick="mostrarComprobante(window._pagos.find(x=>x.id==='${p.id}'))">Rep.</button>
-      <button class="btn btn-danger btn-sm" onclick="eliminarPago('${p.id}')">✕</button>
+      ${usuarioActual?.rol==='admin'?`<button class="btn btn-danger btn-sm" onclick="eliminarPago('${p.id}')">✕</button>`:''}
     </td>
   </tr>`).join('');
   window._pagos = pagos;
 }
 async function eliminarPago(id) {
+  if(usuarioActual?.rol !== 'admin') { alert('Solo la administradora puede eliminar pagos.'); return; }
   if(!confirm('¿Eliminar este pago?'))return;
   pagos=pagos.filter(p=>p.id!==id);
   await guardarPagos();
