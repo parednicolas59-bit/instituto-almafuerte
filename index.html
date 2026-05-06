@@ -191,6 +191,7 @@ tr:hover td{background:rgba(45,125,210,0.05)}
     <button class="nav-btn" onclick="showTab('alumnos',this)">👥 Alumnos</button>
     <button class="nav-btn" onclick="showTab('cobros',this)">💰 Cobros</button>
     <button class="nav-btn" onclick="showTab('morosos',this)">⚠️ Morosos</button>
+    <button class="nav-btn" onclick="showTab('planillas',this)">📋 Planillas</button>
   </div>
 
   <!-- DASHBOARD -->
@@ -315,6 +316,28 @@ tr:hover td{background:rgba(45,125,210,0.05)}
     </div>
   </div>
 </div>
+
+
+  <!-- PLANILLAS -->
+  <div id="tab-planillas" class="section">
+    <div class="card">
+      <div class="card-title">📋 Planillas de pago — Estado anual por carrera y año</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center">
+        <select id="plan-carrera" onchange="renderPlanilla()" style="min-width:220px;padding:9px 12px;border-radius:9px;border:1px solid var(--border);background:rgba(8,21,42,0.7);color:var(--text);font-size:13px;font-family:var(--font)">
+          <option value="Enfermería">Enfermería</option>
+          <option value="Instrumentación Quirúrgica">Instrumentación Quirúrgica</option>
+          <option value="Nutrición">Nutrición</option>
+        </select>
+        <select id="plan-anio" onchange="renderPlanilla()" style="min-width:120px;padding:9px 12px;border-radius:9px;border:1px solid var(--border);background:rgba(8,21,42,0.7);color:var(--text);font-size:13px;font-family:var(--font)">
+          <option value="1">1° año</option>
+          <option value="2">2° año</option>
+          <option value="3">3° año</option>
+        </select>
+        <button onclick="imprimirPlanilla()" style="padding:9px 18px;border-radius:9px;border:none;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;cursor:pointer;font-size:13px;font-weight:600;font-family:var(--font)">🖨️ Imprimir planilla</button>
+      </div>
+      <div id="planilla-container"></div>
+    </div>
+  </div>
 
 <!-- MODAL DETALLE -->
 <div class="modal-bg" id="modal-bg" onclick="if(event.target===this)this.classList.remove('open')">
@@ -462,6 +485,7 @@ function showTab(t, btn) {
   if(t==='alumnos') renderAlumnos();
   if(t==='cobros') initCobros();
   if(t==='morosos') renderMorosos();
+  if(t==='planillas') renderPlanilla();
 }
 window.showTab = showTab;
 
@@ -779,6 +803,161 @@ function numToLetras(n){
 // INIT
 document.getElementById('loading-screen').style.display='none';
 document.getElementById('login-screen').style.display='block';
+// ════════════════════════════════════
+// PLANILLAS
+// ════════════════════════════════════
+function renderPlanilla() {
+  const carrera = document.getElementById('plan-carrera')?.value || 'Enfermería';
+  const anio = parseInt(document.getElementById('plan-anio')?.value || '1');
+  const container = document.getElementById('planilla-container');
+  if (!container) return;
+
+  const als = alumnos
+    .filter(a => a.carrera === carrera && parseInt(a.año) === anio)
+    .sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+  if (!als.length) {
+    container.innerHTML = '<p style="color:var(--text2);padding:1rem;text-align:center">No hay alumnos registrados en esta carrera y año.</p>';
+    return;
+  }
+
+  const ETIQUETAS = ['Mat.','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+  const headerCols = ETIQUETAS.map(e =>
+    `<th style="padding:8px 4px;text-align:center;color:var(--text2);font-weight:600;border-bottom:2px solid var(--border);font-size:11px;white-space:nowrap">${e}</th>`
+  ).join('');
+
+  const rows = als.map((a, idx) => {
+    const celdas = ETIQUETAS.map((_, ci) => {
+      const pago = pagos.find(p => p.alumnoId === a.id && p.cuota == ci);
+      const pagado = !!pago;
+      return `<td style="padding:5px 2px;text-align:center;border-bottom:1px solid var(--border2)">
+        <div title="${pagado ? 'Abonó — ' + (pago.fecha||'') : 'No abonó'}" style="width:26px;height:26px;line-height:26px;border-radius:50%;font-size:12px;margin:auto;background:${pagado?'rgba(31,214,138,0.15)':'rgba(255,77,94,0.08)'};border:1px solid ${pagado?'rgba(31,214,138,0.3)':'rgba(255,77,94,0.2)'}">
+          ${pagado ? '✅' : '❌'}
+        </div>
+      </td>`;
+    }).join('');
+
+    const totalPagadas = ETIQUETAS.filter((_, ci) => pagos.some(p => p.alumnoId === a.id && p.cuota == ci)).length;
+    const color = totalPagadas === 11 ? 'var(--green)' : totalPagadas >= 6 ? 'var(--amber)' : 'var(--red)';
+
+    return `<tr style="background:${idx%2===0?'rgba(255,255,255,0.02)':'transparent'}">
+      <td style="padding:8px 12px;border-bottom:1px solid var(--border2);font-weight:500;white-space:nowrap">${a.nombre}</td>
+      ${celdas}
+      <td style="padding:8px 8px;border-bottom:1px solid var(--border2);text-align:center;font-weight:700;color:${color};font-size:12px">${totalPagadas}/11</td>
+    </tr>`;
+  });
+
+  // Fila de totales
+  const totalesCols = ETIQUETAS.map((_, ci) => {
+    const cant = als.filter(a => pagos.some(p => p.alumnoId === a.id && p.cuota == ci)).length;
+    return `<td style="padding:7px 2px;text-align:center;font-size:11px;font-weight:700;color:var(--green)">${cant}/${als.length}</td>`;
+  }).join('');
+
+  const pagaron100 = als.filter(a => ETIQUETAS.every((_, ci) => pagos.some(p => p.alumnoId === a.id && p.cuota == ci))).length;
+  const conDeuda = als.length - pagaron100;
+
+  container.innerHTML = `
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+      <div style="padding:7px 14px;border-radius:8px;background:rgba(31,214,138,0.1);border:1px solid rgba(31,214,138,0.2);font-size:12px;color:var(--green)">✅ Al día: <strong>${pagaron100}</strong></div>
+      <div style="padding:7px 14px;border-radius:8px;background:rgba(255,77,94,0.08);border:1px solid rgba(255,77,94,0.2);font-size:12px;color:var(--red)">❌ Con deuda: <strong>${conDeuda}</strong></div>
+      <div style="padding:7px 14px;border-radius:8px;background:rgba(45,125,210,0.1);border:1px solid rgba(45,125,210,0.2);font-size:12px;color:var(--blue3)">👥 Total: <strong>${als.length}</strong></div>
+    </div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:600px">
+        <thead>
+          <tr style="background:rgba(45,125,210,0.06)">
+            <th style="padding:10px 12px;text-align:left;color:var(--text2);font-weight:600;border-bottom:2px solid var(--border);min-width:160px">Alumno</th>
+            ${headerCols}
+            <th style="padding:10px 8px;text-align:center;color:var(--text2);font-weight:600;border-bottom:2px solid var(--border);font-size:11px">Total</th>
+          </tr>
+        </thead>
+        <tbody>${rows.join('')}</tbody>
+        <tfoot>
+          <tr style="background:rgba(45,125,210,0.06)">
+            <td style="padding:8px 12px;font-weight:600;font-size:11px;color:var(--text2);border-top:1px solid var(--border)">Pagaron</td>
+            ${totalesCols}
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>`;
+}
+window.renderPlanilla = renderPlanilla;
+
+function imprimirPlanilla() {
+  const carrera = document.getElementById('plan-carrera')?.value || '';
+  const anio = parseInt(document.getElementById('plan-anio')?.value || '1');
+  const anioLabel = anio + '° año';
+  const ETIQUETAS = ['Mat.','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+  const als = alumnos
+    .filter(a => a.carrera === carrera && parseInt(a.año) === anio)
+    .sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+  if (!als.length) { alert('No hay alumnos en esta selección.'); return; }
+
+  const headerCols = ETIQUETAS.map(e => `<th>${e}</th>`).join('');
+
+  const rows = als.map((a, idx) => {
+    const celdas = ETIQUETAS.map((_, ci) => {
+      const pagado = pagos.some(p => p.alumnoId === a.id && p.cuota == ci);
+      return `<td style="text-align:center;color:${pagado?'#16a34a':'#dc2626'}">${pagado?'✅':'❌'}</td>`;
+    }).join('');
+    const totalPagadas = ETIQUETAS.filter((_, ci) => pagos.some(p => p.alumnoId === a.id && p.cuota == ci)).length;
+    return `<tr style="background:${idx%2===0?'#f5f8ff':'#fff'}">
+      <td style="font-weight:500">${a.nombre}</td>${celdas}
+      <td style="text-align:center;font-weight:700;color:${totalPagadas===11?'#16a34a':totalPagadas>=6?'#d97706':'#dc2626'}">${totalPagadas}/11</td>
+    </tr>`;
+  });
+
+  const totalesCols = ETIQUETAS.map((_, ci) => {
+    const cant = als.filter(a => pagos.some(p => p.alumnoId === a.id && p.cuota == ci)).length;
+    return `<td style="text-align:center;font-weight:700;color:#16a34a">${cant}/${als.length}</td>`;
+  }).join('');
+
+  const pagaron100 = als.filter(a => ETIQUETAS.every((_, ci) => pagos.some(p => p.alumnoId === a.id && p.cuota == ci))).length;
+
+  const w = window.open('', '_blank', 'width=960,height=750');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>Planilla — ${carrera} ${anioLabel}</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Arial,sans-serif;font-size:11px;color:#111;padding:20px}
+    h2{font-size:17px;color:#1a3a6b;margin-bottom:3px}
+    .sub{font-size:12px;color:#555;margin-bottom:4px}
+    .resumen{display:flex;gap:14px;margin-bottom:14px;margin-top:10px}
+    .res{padding:5px 12px;border-radius:6px;border:1px solid #ddd;font-size:11px}
+    table{width:100%;border-collapse:collapse}
+    th{background:#1a3a6b;color:#fff;padding:7px 5px;text-align:center;font-size:10px;border:1px solid #1a3a6b}
+    th:first-child{text-align:left;min-width:160px}
+    td{padding:6px 4px;border:1px solid #e5e7eb;text-align:center}
+    td:first-child{text-align:left;font-weight:500}
+    tfoot td{background:#eef2ff;font-weight:700;border-top:2px solid #1a3a6b}
+    .footer{margin-top:14px;font-size:10px;color:#999;text-align:center;border-top:1px solid #eee;padding-top:8px}
+    .btn-print{display:block;width:180px;margin:14px auto 0;padding:9px;background:#1a3a6b;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer}
+    @media print{.btn-print{display:none}}
+  </style></head><body>
+  <h2>🎓 Instituto Almafuerte</h2>
+  <div class="sub">${carrera} — ${anioLabel}</div>
+  <div class="sub">Estado de cuotas anual — Generado el ${new Date().toLocaleDateString('es-AR')}</div>
+  <div class="resumen">
+    <div class="res">✅ Al día: <strong>${pagaron100}</strong></div>
+    <div class="res">❌ Con deuda: <strong>${als.length - pagaron100}</strong></div>
+    <div class="res">👥 Total alumnos: <strong>${als.length}</strong></div>
+  </div>
+  <table>
+    <thead><tr><th>Alumno</th>${headerCols}<th>Total</th></tr></thead>
+    <tbody>${rows.join('')}</tbody>
+    <tfoot><tr><td>Pagaron</td>${totalesCols}<td></td></tr></tfoot>
+  </table>
+  <div class="footer">Instituto Almafuerte · Mendoza 990 · Escuela 187 "Miguel Goyena"</div>
+  <button class="btn-print" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+  </body></html>`);
+  w.document.close();
+}
+window.imprimirPlanilla = imprimirPlanilla;
+
 </script>
 </body>
 </html>
