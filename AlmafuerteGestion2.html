@@ -251,6 +251,7 @@ function renderApp(){
       <div class="topbar-right">
         <span style="color:#fff">${currentUser.name}</span>
         <span class="badge ${currentUser.role}">${currentUser.role}</span>
+        <button class="logout-btn" id="backup-btn" style="background:rgba(200,146,42,0.2);border-color:rgba(200,146,42,0.4);color:var(--gold2)">💾 Backup</button>
         <button class="logout-btn" id="logout-btn">Salir</button>
       </div>
     </div>
@@ -739,6 +740,19 @@ function bindEvents(){
   if(q('l-pass'))q('l-pass').onkeydown=e=>{if(e.key==='Enter')doLogin();};
 
   if(q('logout-btn'))q('logout-btn').onclick=()=>{currentUser=null;modal=null;render();};
+
+  // BACKUP
+  if(q('backup-btn'))q('backup-btn').onclick=()=>{
+    const datos = localStorage.getItem('almafuerte_v1') || '{}';
+    const blob = new Blob([datos], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const fecha = new Date().toISOString().split('T')[0];
+    a.href = url;
+    a.download = 'almafuerte-backup-' + fecha + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   // TABS
   document.querySelectorAll('.nav-tab').forEach(b=>{b.onclick=()=>{tab=b.dataset.tab;busqueda='';modal=null;render();};});
