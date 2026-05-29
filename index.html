@@ -3,898 +3,782 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Almafuerte — Gestión</title>
+<title>Instituto Almafuerte — Gestión</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#f5f0e8;--bg2:#fffdf8;--bg3:#eee8d8;
-  --ink:#1a1208;--ink2:#5a4e38;--ink3:#8a7e68;
-  --gold:#c8922a;--gold2:#e8b24a;
-  --green:#2d6a4f;--green2:#40916c;--greenlight:#d8f3dc;
-  --red:#9b2226;--redlight:#fde8e8;
-  --amber:#bb6800;--amberlight:#fff0cc;
-  --border:#d8cfc0;--border2:#e8e0d0;
-  --shadow:0 2px 12px rgba(26,18,8,0.08);
-  --shadow2:0 4px 24px rgba(26,18,8,0.14);
-  --font-display:'DM Serif Display',serif;
-  --font:'DM Sans',sans-serif;
-  --radius:10px;
+  --navy:#08152a;--navy2:#0d1f3e;--navy3:#152d58;
+  --blue:#1a5fb4;--blue2:#2d7dd2;--blue3:#5ba3f5;
+  --accent:#f5c542;
+  --text:#eef3ff;--text2:#7a9cc5;--text3:#3d608f;
+  --border:rgba(45,125,210,0.18);--border2:rgba(45,125,210,0.08);
+  --green:#1fd68a;--red:#ff4d5e;--amber:#f59e0b;
+  --card:rgba(13,31,62,0.9);
+  --font:'DM Sans',sans-serif;--radius:12px;
 }
-body{background:var(--bg);font-family:var(--font);color:var(--ink);min-height:100vh}
-.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#1a1208 0%,#2d2010 50%,#1a1208 100%)}
-.login-card{background:var(--bg2);border-radius:16px;padding:40px 36px;width:340px;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
-.login-logo{text-align:center;margin-bottom:28px}
-.login-logo h1{font-family:var(--font-display);font-size:28px;color:var(--ink);line-height:1.1}
-.login-logo h1 span{color:var(--gold)}
-.login-logo p{font-size:12px;color:var(--ink3);margin-top:4px;letter-spacing:1px;text-transform:uppercase}
-.inp{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);font-family:var(--font);font-size:14px;color:var(--ink);outline:none;transition:border-color .2s}
-.inp:focus{border-color:var(--gold)}
-.form-row{margin-bottom:14px}
-.form-label{font-size:11px;color:var(--ink2);margin-bottom:5px;display:block;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
-.btn-primary{width:100%;padding:12px;background:var(--ink);border:none;border-radius:8px;color:#fff;font-family:var(--font);font-size:14px;font-weight:500;cursor:pointer;transition:background .2s}
-.btn-primary:hover{background:#2d2010}
-.topbar{background:var(--ink);padding:0 20px;display:flex;align-items:center;gap:8px;height:52px;position:sticky;top:0;z-index:100}
-.logo{font-family:var(--font-display);font-size:18px;color:#fff;margin-right:12px;white-space:nowrap}
-.logo span{color:var(--gold2)}
-.nav-tabs{display:flex;gap:2px;flex:1;overflow-x:auto}
-.nav-tab{padding:6px 12px;font-size:12px;border:none;background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;border-radius:6px;white-space:nowrap;font-family:var(--font);font-weight:500;transition:all .2s}
-.nav-tab.active{background:rgba(200,146,42,0.2);color:var(--gold2)}
-.nav-tab:hover:not(.active){background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.8)}
-.topbar-right{display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(255,255,255,0.6);flex-shrink:0}
-.logout-btn{padding:5px 12px;border:1px solid rgba(255,255,255,0.2);border-radius:6px;background:transparent;color:rgba(255,255,255,0.6);font-size:11px;cursor:pointer;font-family:var(--font)}
-.logout-btn:hover{border-color:rgba(255,255,255,0.4);color:#fff}
-.content{padding:20px;max-width:1100px;margin:0 auto}
-.page-title{font-family:var(--font-display);font-size:26px;color:var(--ink);margin-bottom:4px}
-.page-sub{font-size:12px;color:var(--ink3);margin-bottom:20px}
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
-.metrics{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-bottom:20px}
-.metric{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:16px;position:relative;overflow:hidden}
-.metric-label{font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.metric-value{font-size:22px;font-weight:600;color:var(--ink)}
-.metric-sub{font-size:11px;color:var(--ink3);margin-top:3px}
-.metric-bar{position:absolute;bottom:0;left:0;right:0;height:3px}
-.m-gold .metric-bar{background:var(--gold)}.m-green .metric-bar{background:var(--green2)}.m-red .metric-bar{background:var(--red)}.m-amber .metric-bar{background:var(--amber)}
-.card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow)}
-.card-header{padding:14px 16px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between}
-.card-title{font-size:13px;font-weight:600;color:var(--ink)}
+html,body{background:var(--navy);color:var(--text);font-family:var(--font);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;top:0;left:0;right:0;height:400px;background:radial-gradient(ellipse at 15% -10%,rgba(26,95,180,0.28) 0%,transparent 55%),radial-gradient(ellipse at 85% -5%,rgba(45,125,210,0.15) 0%,transparent 50%);pointer-events:none;z-index:0}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--navy)}::-webkit-scrollbar-thumb{background:var(--navy3);border-radius:4px}
+
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative;z-index:1}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2.5rem 2rem;width:100%;max-width:340px;text-align:center;backdrop-filter:blur(20px);box-shadow:0 32px 80px rgba(0,0,0,0.5)}
+.login-title{font-size:21px;font-weight:600;color:#fff;letter-spacing:-.3px;margin-bottom:4px}
+.login-sub{font-size:12px;color:var(--text2);margin-bottom:1.8rem}
+.login-inp{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:10px;background:rgba(8,21,42,0.8);color:var(--text);font-size:14px;font-family:var(--font);outline:none;transition:border-color .2s;margin-bottom:8px}
+.login-inp:focus{border-color:var(--blue2)}
+.login-err{font-size:12px;color:var(--red);min-height:18px;margin-bottom:8px}
+.login-btn{width:100%;padding:11px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;font-size:14px;font-weight:600;font-family:var(--font);cursor:pointer;transition:opacity .2s}
+.login-btn:hover{opacity:.88}
+
+#app{display:none;position:relative;z-index:1;max-width:1300px;margin:0 auto;padding:1.5rem 1.5rem 3rem}
+.topbar{display:flex;align-items:center;gap:14px;margin-bottom:2rem;flex-wrap:wrap}
+.topbar-title{font-size:18px;font-weight:600;color:#fff;letter-spacing:-.3px}
+.topbar-sub{font-size:11px;color:var(--text2)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.sync-dot{font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(31,214,138,0.12);color:var(--green);border:1px solid rgba(31,214,138,0.25)}
+
+.nav{display:flex;gap:4px;margin-bottom:1.5rem;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:5px;width:fit-content;flex-wrap:wrap}
+.nav-btn{padding:7px 18px;border:none;border-radius:10px;background:transparent;color:var(--text2);font-size:13px;font-family:var(--font);cursor:pointer;transition:all .2s}
+.nav-btn.active{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;font-weight:500;box-shadow:0 4px 16px rgba(26,95,180,0.35)}
+.nav-btn:hover:not(.active){background:rgba(45,125,210,0.12);color:var(--text)}
+
+.section{display:none}.section.active{display:block}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1.2rem;backdrop-filter:blur(10px)}
+.card-title{font-size:15px;font-weight:500;margin-bottom:1.2rem;color:#fff}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:1.4rem}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.25rem;position:relative;overflow:hidden;transition:transform .2s}
+.stat:hover{transform:translateY(-2px)}
+.stat-accent{position:absolute;bottom:0;left:0;right:0;height:2px}
+.stat-ico{font-size:20px;margin-bottom:6px}
+.stat-label{font-size:11px;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.stat-val{font-size:22px;font-weight:600;letter-spacing:-.5px}
+
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:1.4rem}
+
+.form-grid{display:grid;gap:12px;margin-bottom:14px}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}.g4{grid-template-columns:1fr 1fr 1fr 1fr}
+@media(max-width:600px){.g3,.g4{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}.stats-row{grid-template-columns:repeat(2,1fr)}.charts-row{grid-template-columns:1fr}}
+label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+input,select{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:9px;background:rgba(8,21,42,0.7);color:var(--text);font-size:13px;font-family:var(--font);outline:none;transition:border-color .2s}
+input:focus,select:focus{border-color:var(--blue2)}
+input[readonly]{background:rgba(8,21,42,0.4);color:var(--text2)}
+select option{background:#0d1f3e}
+
+.btn{padding:8px 18px;border-radius:9px;border:1px solid var(--border);background:rgba(45,125,210,0.08);color:var(--text);font-size:13px;font-family:var(--font);cursor:pointer;transition:all .18s}
+.btn:hover{background:rgba(45,125,210,0.18)}
+.btn-primary{background:linear-gradient(135deg,var(--blue),var(--blue2));border-color:transparent;color:#fff;font-weight:500}
+.btn-primary:hover{opacity:.88;background:linear-gradient(135deg,var(--blue),var(--blue2))}
+.btn-danger{background:rgba(255,77,94,0.1);border-color:rgba(255,77,94,0.3);color:var(--red)}
+.btn-sm{padding:4px 10px;font-size:11px}
+
+.table-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13px}
-thead{background:var(--bg3)}
-th{padding:10px 14px;text-align:left;font-size:11px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
-td{padding:10px 14px;border-bottom:1px solid var(--border2);color:var(--ink);vertical-align:middle}
+thead{background:rgba(45,125,210,0.06)}
+th{padding:9px 12px;text-align:left;font-weight:500;font-size:11px;color:var(--text2);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid var(--border2);color:var(--text)}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(200,146,42,0.04)}
-.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:.3px}
-.badge.activo{background:var(--greenlight);color:var(--green)}
-.badge.inactivo,.badge.moroso{background:var(--redlight);color:var(--red)}
-.badge.pagado{background:var(--greenlight);color:var(--green)}
-.badge.pendiente{background:var(--amberlight);color:var(--amber)}
-.badge.vencido{background:var(--redlight);color:var(--red)}
-.badge.admin{background:rgba(200,146,42,0.15);color:var(--gold)}
-.badge.secretaria{background:rgba(45,106,79,0.12);color:var(--green)}
-.badge.docente{background:rgba(155,34,38,0.1);color:var(--red)}
-.btn{padding:7px 14px;border-radius:7px;border:1.5px solid var(--border);background:var(--bg2);color:var(--ink);font-size:12px;cursor:pointer;font-family:var(--font);font-weight:500;transition:all .2s;white-space:nowrap}
-.btn:hover{border-color:var(--gold);color:var(--gold)}
-.btn.primary{background:var(--ink);border-color:var(--ink);color:#fff}
-.btn.primary:hover{background:#2d2010}
-.btn.success{background:var(--greenlight);border-color:rgba(45,106,79,0.3);color:var(--green)}
-.btn.success:hover{background:#b7e4c7}
-.btn.danger{background:transparent;border-color:rgba(155,34,38,0.3);color:var(--red)}
-.btn.danger:hover{background:var(--redlight)}
-.btn.wpp{background:#25d366;border-color:#25d366;color:#fff;display:inline-flex;align-items:center;gap:5px}
-.btn.wpp:hover{background:#1fba58;border-color:#1fba58}
-.btn.gold{background:var(--gold);border-color:var(--gold);color:#fff}
-.btn.gold:hover{background:#b07f22}
-.actions-cell{display:flex;gap:4px;flex-wrap:wrap}
-.modal-bg{position:fixed;inset:0;background:rgba(26,18,8,0.6);display:flex;align-items:flex-start;justify-content:center;padding:20px;z-index:200;overflow-y:auto}
-.modal{background:var(--bg2);border-radius:14px;padding:24px;width:100%;max-width:480px;box-shadow:var(--shadow2)}
-.modal-title{font-family:var(--font-display);font-size:20px;margin-bottom:18px;color:var(--ink)}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
-.empty{text-align:center;padding:40px;color:var(--ink3);font-size:13px}
-.err-msg{color:var(--red);font-size:12px;margin-bottom:8px;display:none;padding:6px 10px;background:var(--redlight);border-radius:6px}
-.comp-wrap{font-family:Arial,sans-serif;color:#111;background:#fff;padding:4px}
-.comp-header{border-bottom:3px solid #1a1208;padding-bottom:12px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:flex-start}
-.comp-inst{font-size:20px;font-weight:700;color:#1a1208}
-.comp-nro{text-align:right}
-.comp-sec{font-size:10px;font-weight:700;color:#1a1208;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #ddd;padding-bottom:3px;margin-bottom:8px;margin-top:12px}
-.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;font-size:12px}
-.comp-monto-box{background:#f5f0e8;border:2px solid #1a1208;border-radius:6px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin:14px 0}
-.comp-firmas{border-top:1px dashed #ccc;margin-top:16px;padding-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:20px;text-align:center}
-.mora-alert{background:var(--redlight);border:1px solid rgba(155,34,38,0.3);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--red);margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.info-box{background:var(--amberlight);border:1px solid rgba(187,104,0,0.3);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--amber);margin-bottom:12px}
-.wpp-preview{background:#e8f5e9;border:1px solid #a5d6a7;border-radius:10px;padding:14px;margin-top:10px;font-size:13px;color:#1b5e20;white-space:pre-wrap;font-family:monospace;line-height:1.5}
-.search-wrap{position:relative}
-.search-inp{padding:8px 12px 8px 34px;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);font-family:var(--font);font-size:13px;color:var(--ink);outline:none;width:220px;transition:all .2s}
-.search-inp:focus{border-color:var(--gold);width:260px}
-.search-ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none}
-@media(max-width:600px){
-  .metrics{grid-template-columns:1fr 1fr}
-  .two-col{grid-template-columns:1fr}
-  .content{padding:12px}
-  .search-inp,.search-inp:focus{width:100%}
-  table{font-size:11px}
-  th,td{padding:7px 8px}
-  .topbar{padding:0 10px;gap:4px}
-}
+tr:hover td{background:rgba(45,125,210,0.05)}
+
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-ok{background:rgba(31,214,138,0.12);color:var(--green);border:1px solid rgba(31,214,138,0.25)}
+.badge-late{background:rgba(255,77,94,0.12);color:var(--red);border:1px solid rgba(255,77,94,0.25)}
+.badge-recargo{background:rgba(245,158,11,0.12);color:var(--amber)}
+.badge-ef{background:rgba(31,214,138,0.1);color:var(--green)}
+.badge-tr{background:rgba(91,163,245,0.12);color:var(--blue3)}
+.badge-carrera{font-size:11px;padding:2px 8px;border-radius:20px;background:rgba(45,125,210,0.15);color:var(--blue3);border:1px solid rgba(45,125,210,0.2)}
+.badge-año{font-size:11px;padding:2px 8px;border-radius:20px;background:rgba(245,197,66,0.12);color:var(--accent);border:1px solid rgba(245,197,66,0.2)}
+
+.search-row{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center}
+.search-row input,.search-row select{max-width:220px}
+
+.cuotas-grid{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:4px;margin-top:8px}
+.cuota-box{aspect-ratio:1;border-radius:5px;border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:9px;padding:2px;text-align:center;transition:transform .15s;cursor:default}
+.cuota-box:hover{transform:scale(1.1)}
+.cuota-box.pagada{background:rgba(31,214,138,0.15);border-color:rgba(31,214,138,0.3);color:var(--green)}
+.cuota-box.pendiente{background:rgba(8,21,42,0.5);color:var(--text3)}
+.cuota-box.vencida{background:rgba(255,77,94,0.1);border-color:rgba(255,77,94,0.25);color:var(--red)}
+
+.recargo-banner{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:9px;padding:9px 14px;font-size:12px;color:var(--amber);margin-bottom:14px;display:none}
+.total-box{background:rgba(45,125,210,0.08);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;gap:2rem;align-items:center}
+
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-bg.open{display:flex}
+.modal{background:var(--navy2);border:1px solid var(--border);border-radius:18px;padding:1.8rem;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;box-shadow:0 40px 100px rgba(0,0,0,0.6)}
+.modal-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.2rem}
+.modal-title{font-size:17px;font-weight:500;color:#fff}
+.modal-sub{font-size:12px;color:var(--text2);margin-top:3px}
+
+.comp-wrap{font-family:Arial,sans-serif;color:#111;background:#fff}
+.comp-header{border-bottom:3px solid #1a3a6b;padding-bottom:14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.comp-header-left{display:flex;align-items:center;gap:14px}
+.comp-inst{font-size:19px;font-weight:700;color:#1a3a6b;letter-spacing:.5px}
+.comp-inst-sub,.comp-resolucion{font-size:10px;color:#555;margin-top:2px}
+.comp-num{text-align:right;flex-shrink:0}
+.comp-num-label{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:1px}
+.comp-num-val{font-size:22px;font-weight:700;color:#1a3a6b}
+.comp-title-bar{background:#1a3a6b;color:#fff;text-align:center;padding:7px;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;border-radius:3px}
+.comp-section{margin-bottom:14px}
+.comp-section-title{font-size:10px;font-weight:700;color:#1a3a6b;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #dde3f0;padding-bottom:4px;margin-bottom:8px}
+.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px}
+.comp-field-label{font-size:10px;color:#888;text-transform:uppercase}
+.comp-field-val{font-size:13px;font-weight:600;color:#111;border-bottom:1px solid #eee;padding-bottom:2px;margin-top:1px}
+.comp-monto-box{background:#f0f4fb;border:2px solid #1a3a6b;border-radius:6px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin:14px 0}
+.comp-monto-label{font-size:12px;color:#1a3a6b;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+.comp-monto-val{font-size:26px;font-weight:700;color:#1a3a6b}
+.comp-forma-tag{display:inline-block;background:#1a3a6b;color:#fff;font-size:11px;font-weight:700;padding:3px 12px;border-radius:20px;margin-left:8px}
+.comp-clausulas{background:#fff8f0;border:1px solid #f0c070;border-radius:4px;padding:10px 12px;margin-top:14px}
+.comp-clausulas-title{font-size:10px;font-weight:700;color:#b06000;text-transform:uppercase;margin-bottom:6px}
+.comp-clausulas p{font-size:10px;color:#444;line-height:1.65;margin-bottom:4px}
+.comp-footer{border-top:1px dashed #ccc;margin-top:16px;padding-top:10px;display:flex;justify-content:space-between;align-items:flex-end}
+.comp-firma{text-align:center}
+.comp-firma-line{border-top:1px solid #333;width:180px;margin:32px auto 4px}
+.comp-firma-label{font-size:10px;color:#555}
+.comp-sello{font-size:10px;color:#999;text-align:right;line-height:1.6}
+
+.msg{font-size:12px;min-height:18px;margin-top:8px}
+.msg.ok{color:var(--green)}.msg.err{color:var(--red)}
+
+.loading{display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:14px;color:var(--text2);font-size:14px}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--blue2);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
 @media print{
-  .topbar,.btn,.actions-cell,.nav-tabs,.topbar-right,.modal-bg>div>div:first-child{display:none!important}
-  .modal-bg{position:static;background:none;padding:0;display:block}
-  .modal{box-shadow:none;border:none;background:#fff;max-width:100%;padding:0}
-  body,#root{background:#fff!important;color:#111!important}
+  body *{visibility:hidden!important}
+  #print-area,#print-area *{visibility:visible!important}
+  #print-area{position:fixed;left:0;top:0;width:100%;background:white;padding:24px}
+  .no-print{display:none!important}
 }
 </style>
 </head>
 <body>
-<div id="root"></div>
-<script>
-'use strict';
-const SK='almafuerte_v1';
-const LOCALIDADES = {
-  'Plaza': {
-    label: 'Presidencia de la Plaza',
-    carreras: {
-      'Técnico en Radiología': [1,2,3],
-      'Enfermería': [1],
-      'Auxiliar Docente': [1],
-    }
-  },
-  'Las Breñas': {
-    label: 'Las Breñas',
-    carreras: {
-      'Técnico en Radiología': [1,2,3],
-      'Enfermería': [1,2],
-      'Instrumentación Quirúrgica': [1,2,3],
-      'Auxiliar Docente': [2],
-    }
-  },
-  'Charata': {
-    label: 'Charata',
-    carreras: {
-      'Técnico en Radiología': [1,2],
-      'Enfermería': [1],
-      'Marketing': [1],
-    }
-  }
-};
-const AÑOS_LABEL = {1:'1° año', 2:'2° año', 3:'3° año'};
 
-const fmt=n=>'$'+Math.round(n||0).toLocaleString('es-AR');
-const fd=s=>{if(!s)return'—';try{const[y,m,d]=s.split('-');return`${d}/${m}/${y}`;}catch{return'—';}};
-const mesActual=()=>{const d=new Date();return d.getFullYear()+'-'+(String(d.getMonth()+1).padStart(2,'0'));};
-const hoy=()=>new Date().toISOString().split('T')[0];
+<div id="loading-screen" class="loading">
+  <div class="spinner"></div>
+  <div>Conectando con la nube...</div>
+</div>
 
-const MESES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-const nombreMes=m=>{if(!m)return'—';const p=m.split('-');return MESES[parseInt(p[1])-1]||'—';};
-const añoMes=m=>{if(!m)return'';return m.split('-')[0]||'';};
-
-const DEF={
-  users:[
-    {id:1,name:'Admin',email:'admin@almafuerte',password:'admin123',role:'admin'},
-    {id:2,name:'Secretaria',email:'sec@almafuerte',password:'1234',role:'secretaria'},
-  ],
-  alumnos:[
-    {id:1,nombre:'María González',dni:'38452100',telefono:'3764123456',email:'maria@mail.com',localidad:'Plaza',carrera:'Técnico en Radiología',anio:1,curso:'',turno:'Mañana',fechaAlta:'2026-03-01',montoCuota:25000,estado:'activo'},
-    {id:2,nombre:'Ana Rodríguez',dni:'40123456',telefono:'3764234567',email:'ana@mail.com',localidad:'Las Breñas',carrera:'Enfermería',anio:1,curso:'',turno:'Tarde',fechaAlta:'2026-03-01',montoCuota:28000,estado:'activo'},
-    {id:3,nombre:'Laura Pérez',dni:'42567890',telefono:'3764345678',email:'laura@mail.com',localidad:'Charata',carrera:'Marketing',anio:1,curso:'',turno:'Mañana',fechaAlta:'2026-03-01',montoCuota:22000,estado:'activo'},
-  ],
-  cuotas:[
-    {id:1,alumnoId:1,mes:'2026-03',monto:25000,estado:'pagado',fechaPago:'2026-03-05',fechaVencimiento:'2026-03-10',medioPago:'transferencia'},
-    {id:2,alumnoId:1,mes:'2026-04',monto:25000,estado:'pagado',fechaPago:'2026-04-08',fechaVencimiento:'2026-04-10',medioPago:'efectivo'},
-    {id:3,alumnoId:1,mes:'2026-05',monto:25000,estado:'pendiente',fechaPago:null,fechaVencimiento:'2026-05-10',medioPago:null},
-    {id:4,alumnoId:2,mes:'2026-03',monto:28000,estado:'pagado',fechaPago:'2026-03-03',fechaVencimiento:'2026-03-10',medioPago:'transferencia'},
-    {id:5,alumnoId:2,mes:'2026-04',monto:28000,estado:'vencido',fechaPago:null,fechaVencimiento:'2026-04-10',medioPago:null},
-    {id:6,alumnoId:2,mes:'2026-05',monto:28000,estado:'pendiente',fechaPago:null,fechaVencimiento:'2026-05-10',medioPago:null},
-    {id:7,alumnoId:3,mes:'2026-03',monto:22000,estado:'pagado',fechaPago:'2026-03-07',fechaVencimiento:'2026-03-10',medioPago:'transferencia'},
-    {id:8,alumnoId:3,mes:'2026-04',monto:22000,estado:'pagado',fechaPago:'2026-04-05',fechaVencimiento:'2026-04-10',medioPago:'efectivo'},
-    {id:9,alumnoId:3,mes:'2026-05',monto:22000,estado:'pendiente',fechaPago:null,fechaVencimiento:'2026-05-10',medioPago:null},
-  ],
-  nextId:{alumno:4,cuota:10,user:3}
-};
-
-function loadData(){
-  try{
-    const s=localStorage.getItem(SK);
-    if(!s)return JSON.parse(JSON.stringify(DEF));
-    const d=JSON.parse(s);
-    if(!d.alumnos)d.alumnos=[];
-    if(!d.cuotas)d.cuotas=[];
-    if(!d.users)d.users=[];
-    if(!d.nextId)d.nextId={};
-    d.nextId.alumno=d.nextId.alumno||(d.alumnos.reduce((m,a)=>Math.max(m,a.id),0)+1);
-    d.nextId.cuota=d.nextId.cuota||(d.cuotas.reduce((m,c)=>Math.max(m,c.id),0)+1);
-    d.nextId.user=d.nextId.user||(d.users.reduce((m,u)=>Math.max(m,u.id),0)+1);
-    return d;
-  }catch(e){return JSON.parse(JSON.stringify(DEF));}
-}
-function save(d){try{localStorage.setItem(SK,JSON.stringify(d));}catch(e){alert('Error al guardar datos. Almacenamiento lleno.');}}
-
-let data=loadData();
-let currentUser=null;
-let tab='dashboard';
-let modal=null;
-let busqueda='';
-
-const getA=id=>data.alumnos.find(a=>a.id===Number(id));
-const getCuotasA=id=>data.cuotas.filter(c=>c.alumnoId===Number(id));
-const esMoroso=id=>data.cuotas.some(c=>c.alumnoId===Number(id)&&c.estado==='vencido');
-
-function render(){
-  document.getElementById('root').innerHTML=currentUser?renderApp():renderLogin();
-  bindEvents();
-}
-
-// ── LOGIN ────────────────────────────────────────────────────
-function renderLogin(){
-  return`<div class="login-wrap"><div class="login-card">
-    <div class="login-logo"><h1>Instituto<br><span>Almafuerte</span></h1><p>Sistema de Gestión</p></div>
-    <div class="form-row"><label class="form-label">Usuario</label><input class="inp" id="l-email" placeholder="Email" autocomplete="username"></div>
-    <div class="form-row"><label class="form-label">Contraseña</label><input class="inp" type="password" id="l-pass" placeholder="••••••" autocomplete="current-password"></div>
-    <div id="l-err" style="color:#9b2226;font-size:12px;margin-bottom:10px;display:none">⚠️ Usuario o contraseña incorrectos</div>
-    <button class="btn-primary" id="login-btn">Ingresar</button>
-    <div style="margin-top:14px;padding:10px;background:var(--bg3);border-radius:8px;font-size:11px;color:var(--ink3)">Demo: <strong>admin@almafuerte</strong> / <strong>admin123</strong></div>
-  </div></div>`;
-}
-
-// ── APP SHELL ────────────────────────────────────────────────
-function renderApp(){
-  return`<div>
-    <div class="topbar">
-      <span class="logo">Instituto <span>Almafuerte</span></span>
-      <div class="nav-tabs">
-        <button class="nav-tab${tab==='dashboard'?' active':''}" data-tab="dashboard">Dashboard</button>
-        <button class="nav-tab${tab==='alumnos'?' active':''}" data-tab="alumnos">Alumnos</button>
-        <button class="nav-tab${tab==='cuotas'?' active':''}" data-tab="cuotas">Cuotas</button>
-        <button class="nav-tab${tab==='cobros'?' active':''}" data-tab="cobros">Registrar Cobro</button>
-        ${currentUser.role==='admin'?`<button class="nav-tab${tab==='usuarios'?' active':''}" data-tab="usuarios">Usuarios</button>`:''}
-      </div>
-      <div class="topbar-right">
-        <span style="color:#fff">${currentUser.name}</span>
-        <span class="badge ${currentUser.role}">${currentUser.role}</span>
-        <button class="logout-btn" id="backup-btn" style="background:rgba(200,146,42,0.2);border-color:rgba(200,146,42,0.4);color:var(--gold2)">💾 Backup</button>
-        <button class="logout-btn" id="logout-btn">Salir</button>
-      </div>
+<div id="login-screen" style="display:none">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div style="width:72px;height:72px;background:linear-gradient(135deg,#1a3a6b,#2d7dd2);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:28px">🎓</div>
+      <div class="login-title">Instituto Almafuerte</div>
+      <div class="login-sub">Sistema de gestión de cuotas</div>
+      <input type="password" id="inp-pass" class="login-inp" placeholder="Contraseña" onkeydown="if(event.key==='Enter')login()">
+      <div id="pass-error" class="login-err"></div>
+      <button class="login-btn" onclick="login()">Ingresar</button>
     </div>
-    <div class="content">${renderTab()}</div>
-    ${modal?renderModal():''}
-  </div>`;
-}
+  </div>
+</div>
 
-function renderTab(){
-  if(tab==='dashboard')return renderDash();
-  if(tab==='alumnos')return renderAlumnos();
-  if(tab==='cuotas')return renderCuotas();
-  if(tab==='cobros')return renderCobros();
-  if(tab==='usuarios')return renderUsuarios();
-  return '';
-}
+<div id="app">
+  <div class="topbar">
+    <div style="width:44px;height:44px;background:linear-gradient(135deg,#1a3a6b,#2d7dd2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🎓</div>
+    <div>
+      <div class="topbar-title">Instituto Almafuerte</div>
+      <div class="topbar-sub">Mendoza 990 · Escuela 187 "Miguel Goyena"</div>
+    </div>
+    <div class="topbar-right">
+      <span class="sync-dot">● En línea</span>
+      <button class="btn btn-sm" onclick="logout()">Salir</button>
+    </div>
+  </div>
 
-// ── DASHBOARD ────────────────────────────────────────────────
-function renderDash(){
-  const mes=mesActual();
-  const activos=data.alumnos.filter(a=>a.estado==='activo');
-  const morosos=activos.filter(a=>esMoroso(a.id));
-  const cuotasMes=data.cuotas.filter(c=>c.mes===mes);
-  const cobrado=cuotasMes.filter(c=>c.estado==='pagado').reduce((s,c)=>s+c.monto,0);
-  const pendiente=cuotasMes.filter(c=>c.estado!=='pagado').reduce((s,c)=>s+c.monto,0);
-  const vencidas=data.cuotas.filter(c=>c.estado==='vencido').length;
-  const pendDash=data.cuotas.filter(c=>c.mes===mes&&c.estado!=='pagado');
-  return`<div>
-    <div class="page-title">Dashboard</div>
-    <div class="page-sub">${new Date().toLocaleDateString('es-AR',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</div>
-    ${morosos.length>0?`<div class="mora-alert">⚠️ <strong>${morosos.length} alumno${morosos.length>1?'s':''} con cuotas vencidas:</strong> ${morosos.map(a=>a.nombre).join(', ')}</div>`:''}
-    <div class="metrics">
-      <div class="metric m-gold"><div class="metric-bar"></div><div class="metric-label">Alumnos activos</div><div class="metric-value">${activos.length}</div><div class="metric-sub">inscriptos</div></div>
-      <div class="metric m-green"><div class="metric-bar"></div><div class="metric-label">Cobrado — ${nombreMes(mes)}</div><div class="metric-value">${fmt(cobrado)}</div><div class="metric-sub">${cuotasMes.filter(c=>c.estado==='pagado').length} cuotas</div></div>
-      <div class="metric m-amber"><div class="metric-bar"></div><div class="metric-label">A cobrar — ${nombreMes(mes)}</div><div class="metric-value">${fmt(pendiente)}</div><div class="metric-sub">${cuotasMes.filter(c=>c.estado!=='pagado').length} cuotas</div></div>
-      <div class="metric m-red"><div class="metric-bar"></div><div class="metric-label">Cuotas vencidas</div><div class="metric-value">${vencidas}</div><div class="metric-sub">${morosos.length} alumnos</div></div>
+  <div class="nav">
+    <button class="nav-btn active" onclick="showTab('dashboard',this)">📊 Resumen</button>
+    <button class="nav-btn" onclick="showTab('alumnos',this)">👥 Alumnos</button>
+    <button class="nav-btn" onclick="showTab('cobros',this)">💰 Cobros</button>
+    <button class="nav-btn" onclick="showTab('morosos',this)">⚠️ Morosos</button>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="tab-dashboard" class="section active">
+    <div class="stats-row" id="stats-row"></div>
+    <div class="charts-row">
+      <div class="card"><div class="card-title">Cobros por mes</div><canvas id="chart-cobros" height="160"></canvas></div>
+      <div class="card"><div class="card-title">Alumnos por carrera</div><canvas id="chart-carreras" height="160"></canvas></div>
     </div>
     <div class="card">
-      <div class="card-header"><span class="card-title">Pendientes — ${nombreMes(mes)} ${añoMes(mes)}</span></div>
-      <table><thead><tr><th>Alumno</th><th>Localidad</th><th>Carrera / Año</th><th>Monto</th><th>Vencimiento</th><th>Estado</th><th>Acciones</th></tr></thead>
-      <tbody>
-        ${pendDash.length===0?`<tr><td colspan="7" class="empty">✅ Todas las cuotas del mes están cobradas</td></tr>`:''}
-        ${pendDash.map(c=>{const a=getA(c.alumnoId);if(!a)return'';return`<tr>
-          <td><strong>${a.nombre}</strong></td><td style="color:var(--ink3)">${a.localidad?LOCALIDADES[a.localidad]?.label||a.localidad:'—'}</td><td style="color:var(--ink3)">${a.carrera||'—'}${a.anio?` ${AÑOS_LABEL[a.anio]||''}`:'' }</td>
-          <td style="color:var(--gold);font-weight:600">${fmt(c.monto)}</td>
-          <td>${fd(c.fechaVencimiento)}</td><td><span class="badge ${c.estado}">${c.estado}</span></td>
-          <td><div class="actions-cell">
-            <button class="btn success" data-cobrar="${c.id}" style="font-size:11px;padding:3px 9px">Cobrar</button>
-            <button class="btn wpp" data-wpp-cuota="${c.id}" style="font-size:11px;padding:3px 9px">💬 WPP</button>
-          </div></td>
-        </tr>`;}).join('')}
-      </tbody></table>
-    </div>
-  </div>`;
-}
-
-// ── ALUMNOS ──────────────────────────────────────────────────
-function renderAlumnos(){
-  const q=busqueda.toLowerCase();
-  const filtrados=q?data.alumnos.filter(a=>a.nombre.toLowerCase().includes(q)||a.dni.includes(busqueda)||a.curso?.toLowerCase().includes(q)||(a.carrera||'').toLowerCase().includes(q)||(a.localidad||'').toLowerCase().includes(q)):data.alumnos;
-  return`<div>
-    <div class="section-header">
-      <div><div class="page-title">Alumnos</div><div class="page-sub">${data.alumnos.filter(a=>a.estado==='activo').length} activos</div></div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <div class="search-wrap"><span class="search-ico">🔍</span><input class="search-inp" id="busqueda-inp" placeholder="Nombre, DNI o curso..." value="${busqueda}"></div>
-        <button class="btn primary" id="nuevo-alumno-btn">+ Nuevo alumno</button>
+      <div class="card-title">Estado general</div>
+      <div class="table-wrap">
+        <table><thead><tr><th>Alumno</th><th>Carrera</th><th>Año</th><th>Cuotas pagas</th><th>Adeuda</th><th>Monto</th><th>Estado</th></tr></thead>
+        <tbody id="tbody-dashboard"></tbody></table>
       </div>
     </div>
-    <div class="card"><table>
-      <thead><tr><th>Alumno</th><th>DNI</th><th>Localidad</th><th>Carrera</th><th>Año</th><th>Turno</th><th>Teléfono</th><th>Estado</th><th>Acciones</th></tr></thead>
-      <tbody>
-        ${filtrados.length===0?`<tr><td colspan="9" class="empty">No se encontraron alumnos</td></tr>`:''}
-        ${filtrados.map(a=>`<tr>
-          <td><strong>${a.nombre}</strong>${esMoroso(a.id)?` <span class="badge moroso" style="font-size:9px;margin-left:4px">MORA</span>`:''}</td>
-          <td style="color:var(--ink3)">${a.dni}</td><td style="color:var(--ink3)">${a.localidad?LOCALIDADES[a.localidad]?.label||a.localidad:'—'}</td><td>${a.carrera||'—'}${a.anio?` ${AÑOS_LABEL[a.anio]||''}`:'' }</td><td style="color:var(--ink3)">${a.turno}</td><td>${a.telefono}</td>
-          <td><span class="badge ${a.estado}">${a.estado}</span></td>
-          <td><div class="actions-cell">
-            <button class="btn" data-ver-alumno="${a.id}" style="font-size:11px;padding:3px 9px">Ver</button>
-            <button class="btn" data-edit-alumno="${a.id}" style="font-size:11px;padding:3px 9px">Editar</button>
-            <button class="btn wpp" data-wpp-alumno="${a.id}" style="font-size:11px;padding:3px 9px">💬</button>
-          </div></td>
-        </tr>`).join('')}
-      </tbody>
-    </table></div>
-  </div>`;
-}
+  </div>
 
-// ── CUOTAS ───────────────────────────────────────────────────
-function renderCuotas(){
-  const mes=mesActual();
-  return`<div>
-    <div class="section-header">
-      <div><div class="page-title">Cuotas</div><div class="page-sub">${nombreMes(mes)} ${añoMes(mes)} — todas las cuotas</div></div>
-      <button class="btn gold" id="generar-cuotas-btn">⚡ Generar cuotas del mes</button>
+  <!-- ALUMNOS -->
+  <div id="tab-alumnos" class="section">
+    <div class="card">
+      <div class="card-title">➕ Agregar alumno</div>
+      <div class="form-grid g3">
+        <div><label>Nombre y apellido</label><input id="inp-nombre" placeholder="María González"></div>
+        <div><label>DNI</label><input id="inp-dni" placeholder="40123456"></div>
+        <div><label>Teléfono</label><input id="inp-tel" placeholder="3624 000000"></div>
+      </div>
+      <div class="form-grid g3">
+        <div><label>Carrera</label>
+          <select id="inp-carrera">
+            <option value="Enfermería">Enfermería</option>
+            <option value="Instrumentación Quirúrgica">Instrumentación Quirúrgica</option>
+            <option value="Nutrición">Nutrición</option>
+          </select>
+        </div>
+        <div><label>Año que cursa</label>
+          <select id="inp-año"><option value="1">1° año</option><option value="2">2° año</option><option value="3">3° año</option></select>
+        </div>
+        <div><label>Año de inicio</label><input id="inp-inicio" type="number" placeholder="2025" min="2020" max="2030"></div>
+      </div>
+      <button class="btn btn-primary" onclick="agregarAlumno()">Agregar alumno</button>
+      <div id="msg-alumno" class="msg"></div>
     </div>
-    <div class="card"><table>
-      <thead><tr><th>Alumno</th><th>Localidad</th><th>Carrera / Año</th><th>Mes</th><th>Monto</th><th>Vencimiento</th><th>Estado</th><th>Pago</th><th>Acciones</th></tr></thead>
-      <tbody>
-        ${data.cuotas.length===0?`<tr><td colspan="9" class="empty">Sin cuotas registradas</td></tr>`:''}
-        ${data.cuotas.slice().reverse().map(c=>{
-          const a=getA(c.alumnoId);if(!a)return'';
-          return`<tr>
-            <td><strong>${a.nombre}</strong></td><td style="color:var(--ink3)">${a.localidad?LOCALIDADES[a.localidad]?.label||a.localidad:'—'}</td><td style="color:var(--ink3)">${a.carrera||'—'}${a.anio?` ${AÑOS_LABEL[a.anio]||''}`:'' }</td>
-            <td>${nombreMes(c.mes)} ${añoMes(c.mes)}</td>
-            <td style="color:var(--gold);font-weight:600">${fmt(c.monto)}</td>
-            <td>${fd(c.fechaVencimiento)}</td>
-            <td><span class="badge ${c.estado}">${c.estado}</span></td>
-            <td style="color:var(--ink3)">${fd(c.fechaPago)}</td>
-            <td><div class="actions-cell">
-              ${c.estado!=='pagado'?`<button class="btn success" data-cobrar="${c.id}" style="font-size:11px;padding:3px 9px">Cobrar</button>`:''}
-              ${c.estado!=='pagado'?`<button class="btn wpp" data-wpp-cuota="${c.id}" style="font-size:11px;padding:3px 9px">💬</button>`:''}
-              ${c.estado==='pagado'?`<button class="btn" data-ver-recibo="${c.id}" style="font-size:11px;padding:3px 9px">🖨️ Recibo</button>`:''}
-            </div></td>
-          </tr>`;
-        }).join('')}
-      </tbody>
-    </table></div>
-  </div>`;
-}
-
-// ── COBROS ───────────────────────────────────────────────────
-function renderCobros(){
-  return`<div>
-    <div class="page-title">Registrar Cobro</div>
-    <div class="page-sub">Cobrá una cuota y generá el recibo automáticamente</div>
-    <div class="card" style="max-width:520px">
-      <div class="card-header"><span class="card-title">Datos del cobro</span></div>
-      <div style="padding:16px">
-        <div class="form-row"><label class="form-label">Alumno *</label>
-          <select class="inp" id="cb-alumno">
-            <option value="">— Seleccioná un alumno —</option>
-            ${data.alumnos.filter(a=>a.estado==='activo').map(a=>`<option value="${a.id}">${a.nombre} — ${a.localidad||''} ${a.carrera||''} ${a.anio?AÑOS_LABEL[a.anio]||'':'' }</option>`).join('')}
-          </select>
-        </div>
-        <div class="form-row" id="cb-cuotas-wrap" style="display:none"><label class="form-label">Cuota a cobrar *</label>
-          <select class="inp" id="cb-cuota"><option value="">— Seleccioná una cuota —</option></select>
-        </div>
-        <div class="two-col">
-          <div class="form-row"><label class="form-label">Monto *</label><input class="inp" type="number" id="cb-monto" placeholder="0" min="0"></div>
-          <div class="form-row"><label class="form-label">Fecha de pago *</label><input class="inp" type="date" id="cb-fecha" value="${hoy()}"></div>
-        </div>
-        <div class="form-row"><label class="form-label">Medio de pago</label>
-          <select class="inp" id="cb-medio"><option value="transferencia">Transferencia</option><option value="efectivo">Efectivo</option></select>
-        </div>
-        <div class="form-row"><label class="form-label">Observaciones</label><input class="inp" id="cb-obs" placeholder="Opcional..."></div>
-        <div class="err-msg" id="cb-error"></div>
-        <div class="form-actions"><button class="btn primary" id="confirmar-cobro-btn">✓ Confirmar cobro y generar recibo</button></div>
-      </div>
-    </div>
-  </div>`;
-}
-
-// ── USUARIOS ─────────────────────────────────────────────────
-function renderUsuarios(){
-  return`<div>
-    <div class="section-header"><div class="page-title">Usuarios</div><button class="btn primary" id="nuevo-user-btn">+ Nuevo usuario</button></div>
-    <div class="card"><table>
-      <thead><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Acciones</th></tr></thead>
-      <tbody>${data.users.map(u=>`<tr>
-        <td><strong>${u.name}</strong>${u.id===currentUser.id?' <span style="font-size:10px;color:var(--green)">(vos)</span>':''}</td>
-        <td style="color:var(--ink3)">${u.email}</td>
-        <td><span class="badge ${u.role}">${u.role}</span></td>
-        <td><div class="actions-cell">
-          <button class="btn" data-edit-user="${u.id}" style="font-size:11px;padding:3px 9px">Editar</button>
-          ${u.id!==currentUser.id?`<button class="btn danger" data-del-user="${u.id}" style="font-size:11px;padding:3px 9px">✕ Eliminar</button>`:''}
-        </div></td>
-      </tr>`).join('')}</tbody>
-    </table></div>
-  </div>`;
-}
-
-// ── MODALES ──────────────────────────────────────────────────
-function renderModal(){
-  const m=modal;if(!m)return'';
-
-  if(m.type==='nuevo-alumno'||m.type==='edit-alumno'){
-    const a=m.alumno||{};
-    return`<div class="modal-bg" id="modal-overlay"><div class="modal" onclick="event.stopPropagation()">
-      <div class="modal-title">${m.type==='nuevo-alumno'?'Nuevo alumno':'Editar alumno'}</div>
-      <div class="two-col">
-        <div class="form-row"><label class="form-label">Nombre *</label><input class="inp" id="a-nombre" value="${a.nombre||''}" placeholder="Nombre y apellido"></div>
-        <div class="form-row"><label class="form-label">DNI *</label><input class="inp" id="a-dni" value="${a.dni||''}" placeholder="sin puntos"></div>
-      </div>
-      <div class="two-col">
-        <div class="form-row"><label class="form-label">Teléfono / WPP *</label><input class="inp" id="a-tel" value="${a.telefono||''}" placeholder="3764xxxxxx"></div>
-        <div class="form-row"><label class="form-label">Email</label><input class="inp" id="a-email" value="${a.email||''}" placeholder="opcional"></div>
-      </div>
-      <div class="two-col">
-        <div class="form-row"><label class="form-label">Localidad</label>
-          <select class="inp" id="a-localidad" onchange="window._onLocalidadChange()">
-            <option value="">— Seleccioná —</option>
-            ${Object.entries(LOCALIDADES).map(([k,v])=>`<option value="${k}"${(a.localidad||'')=== k?' selected':''}>${v.label}</option>`).join('')}
-          </select>
-        </div>
-        <div class="form-row"><label class="form-label">Carrera</label>
-          <select class="inp" id="a-carrera" onchange="window._onCarreraChange()">
-            <option value="">— Seleccioná localidad —</option>
-            ${(()=>{const loc=a.localidad?LOCALIDADES[a.localidad]:null;if(!loc)return'';return Object.keys(loc.carreras).map(c=>`<option value="${c}"${(a.carrera||'')===c?' selected':''}>${c}</option>`).join('');})()}
-          </select>
-        </div>
-      </div>
-      <div class="two-col">
-        <div class="form-row"><label class="form-label">Año</label>
-          <select class="inp" id="a-anio">
-            <option value="">— Año —</option>
-            ${(()=>{const loc=a.localidad?LOCALIDADES[a.localidad]:null;if(!loc||!a.carrera)return'';const años=loc.carreras[a.carrera]||[];return años.map(n=>`<option value="${n}"${Number(a.anio)===n?' selected':''}>${AÑOS_LABEL[n]}</option>`).join('');})()}
-          </select>
-        </div>
-        <div class="form-row"><label class="form-label">Curso / Materia</label><input class="inp" id="a-curso" value="${a.curso||''}" placeholder="opcional"></div>
-        <div class="form-row"><label class="form-label">Turno</label>
-          <select class="inp" id="a-turno">
-            <option value="Mañana"${(a.turno||'Mañana')==='Mañana'?' selected':''}>Mañana</option>
-            <option value="Tarde"${a.turno==='Tarde'?' selected':''}>Tarde</option>
-            <option value="Noche"${a.turno==='Noche'?' selected':''}>Noche</option>
-          </select>
-        </div>
-      </div>
-      <div class="two-col">
-        <div class="form-row"><label class="form-label">Fecha de alta</label><input class="inp" type="date" id="a-fecha" value="${a.fechaAlta||hoy()}"></div>
-        <div class="form-row"><label class="form-label">Monto cuota mensual</label><input class="inp" type="number" id="a-monto" value="${a.montoCuota||''}" placeholder="ej. 25000" min="0"></div>
-      </div>
-      ${m.type==='edit-alumno'?`<div class="form-row"><label class="form-label">Estado</label>
-        <select class="inp" id="a-estado">
-          <option value="activo"${a.estado==='activo'?' selected':''}>Activo</option>
-          <option value="inactivo"${a.estado==='inactivo'?' selected':''}>Inactivo</option>
-        </select></div>`:''}
-      <div class="err-msg" id="a-error"></div>
-      <div class="form-actions">
-        <button class="btn" id="modal-cancel">Cancelar</button>
-        <button class="btn primary" id="modal-save-alumno" data-id="${a.id||''}">Guardar</button>
-      </div>
-    </div></div>`;
-  }
-
-  if(m.type==='ver-alumno'){
-    const a=m.alumno;
-    const cuotas=getCuotasA(a.id);
-    const totalPag=cuotas.filter(c=>c.estado==='pagado').reduce((s,c)=>s+c.monto,0);
-    const totalPend=cuotas.filter(c=>c.estado!=='pagado').reduce((s,c)=>s+c.monto,0);
-    return`<div class="modal-bg" id="modal-overlay"><div class="modal" style="max-width:620px" onclick="event.stopPropagation()">
-      <div class="modal-title">${a.nombre}</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
-        <div style="background:var(--bg3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:11px;color:var(--ink3)">Total pagado</div><div style="font-size:17px;font-weight:600;color:var(--green)">${fmt(totalPag)}</div></div>
-        <div style="background:var(--bg3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:11px;color:var(--ink3)">Pendiente</div><div style="font-size:17px;font-weight:600;color:var(--amber)">${fmt(totalPend)}</div></div>
-        <div style="background:var(--bg3);border-radius:8px;padding:10px;text-align:center"><div style="font-size:11px;color:var(--ink3)">Cuotas pagas</div><div style="font-size:17px;font-weight:600">${cuotas.filter(c=>c.estado==='pagado').length}/${cuotas.length}</div></div>
-      </div>
-      <div style="font-size:12px;color:var(--ink3);margin-bottom:14px;display:flex;gap:14px;flex-wrap:wrap">
-        <span>📱 ${a.telefono}</span>${a.localidad?`<span>📍 ${LOCALIDADES[a.localidad]?.label||a.localidad}</span>`:''}<span>🎓 ${a.carrera||'—'}${a.anio?` ${AÑOS_LABEL[a.anio]||''}`:'' }</span>${a.curso?`<span>📚 ${a.curso}</span>`:''}<span>🕐 ${a.turno}</span><span>🪪 ${a.dni}</span>${a.email?`<span>✉️ ${a.email}</span>`:''}
-      </div>
-      <table style="font-size:12px"><thead><tr><th>Mes</th><th>Monto</th><th>Venc.</th><th>Estado</th><th>Pago</th><th></th></tr></thead>
-      <tbody>
-        ${cuotas.length===0?`<tr><td colspan="6" class="empty">Sin cuotas registradas</td></tr>`:''}
-        ${cuotas.slice().reverse().map(c=>`<tr>
-          <td>${nombreMes(c.mes)} ${añoMes(c.mes)}</td>
-          <td style="color:var(--gold);font-weight:600">${fmt(c.monto)}</td>
-          <td>${fd(c.fechaVencimiento)}</td>
-          <td><span class="badge ${c.estado}">${c.estado}</span></td>
-          <td style="color:var(--ink3)">${fd(c.fechaPago)}</td>
-          <td>
-            ${c.estado!=='pagado'?`<button class="btn success" data-cobrar="${c.id}" style="font-size:10px;padding:2px 7px">Cobrar</button>`:''}
-            ${c.estado==='pagado'?`<button class="btn" data-ver-recibo="${c.id}" style="font-size:10px;padding:2px 7px">🖨️</button>`:''}
-          </td>
-        </tr>`).join('')}
-      </tbody></table>
-      <div class="form-actions">
-        <button class="btn wpp" data-wpp-alumno="${a.id}">💬 WhatsApp</button>
-        <button class="btn" data-edit-alumno="${a.id}">Editar</button>
-        <button class="btn" id="modal-cancel">Cerrar</button>
-      </div>
-    </div></div>`;
-  }
-
-  if(m.type==='comp-cuota'){
-    const c=m.cuota;if(!c)return'';
-    const a=getA(c.alumnoId);if(!a)return'';
-    const nro='R-'+String(a.id).padStart(4,'0')+'-'+String(c.id).padStart(4,'0');
-    return`<div class="modal-bg" id="modal-overlay"><div class="modal" style="max-width:640px" onclick="event.stopPropagation()">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:6px">
-        <span style="font-size:15px;font-weight:600">Recibo de pago</span>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <button class="btn primary" onclick="window.print()">🖨️ Imprimir / PDF</button>
-          <button class="btn wpp" id="wpp-desde-recibo" data-cuota-id="${c.id}">💬 Enviar WPP</button>
-          <button class="btn" id="modal-cancel">✕ Cerrar</button>
-        </div>
-      </div>
-      <div id="print-area"><div class="comp-wrap">
-        <div class="comp-header">
-          <div><div class="comp-inst">Instituto Almafuerte</div><div style="font-size:11px;color:#555">Formación Profesional — Argentina</div></div>
-          <div class="comp-nro">
-            <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:1px">Recibo N°</div>
-            <div style="font-size:18px;font-weight:700;color:#1a1208">${nro}</div>
-            <div style="font-size:11px;color:#666">Fecha: ${fd(c.fechaPago)||new Date().toLocaleDateString('es-AR')}</div>
-          </div>
-        </div>
-        <div style="background:#c8922a;color:#fff;text-align:center;padding:6px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;border-radius:3px">RECIBO DE PAGO DE CUOTA</div>
-        <div class="comp-sec">Datos del alumno</div>
-        <div class="comp-grid">
-          <div><span style="color:#888">Nombre:</span> <strong>${a.nombre}</strong></div>
-          <div><span style="color:#888">DNI:</span> <strong>${a.dni}</strong></div>
-          <div><span style="color:#888">Teléfono:</span> ${a.telefono}</div>
-          <div><span style="color:#888">Localidad:</span> ${a.localidad?LOCALIDADES[a.localidad]?.label||a.localidad:'—'}</div>
-          <div><span style="color:#888">Carrera:</span> ${a.carrera||'—'}${a.anio?` — ${AÑOS_LABEL[a.anio]||''}`:'' }</div>
-          <div><span style="color:#888">Curso:</span> ${a.curso||'—'} — Turno ${a.turno}</div>
-        </div>
-        <div class="comp-sec">Detalle del pago</div>
-        <div class="comp-grid">
-          <div><span style="color:#888">Período:</span> <strong>${nombreMes(c.mes)} ${añoMes(c.mes)}</strong></div>
-          <div><span style="color:#888">Vencimiento:</span> ${fd(c.fechaVencimiento)}</div>
-          ${c.medioPago?`<div><span style="color:#888">Medio de pago:</span> ${c.medioPago}</div>`:''} 
-        </div>
-        <div class="comp-monto-box">
-          <div style="font-size:11px;color:#1a1208;font-weight:600;text-transform:uppercase;letter-spacing:1px">Monto abonado</div>
-          <div style="font-size:26px;font-weight:700;color:#1a1208">${fmt(c.monto)}</div>
-        </div>
-        <div class="comp-firmas">
-          <div><div style="border-top:1px solid #333;width:160px;margin:40px auto 4px"></div><div style="font-size:10px;color:#555">Firma del alumno</div></div>
-          <div><div style="border-top:1px solid #333;width:160px;margin:40px auto 4px"></div><div style="font-size:10px;color:#555">Firma y sello Instituto</div></div>
-        </div>
-        <div style="text-align:center;margin-top:10px;font-size:10px;color:#999">Conserve este recibo — Instituto Almafuerte</div>
-      </div></div>
-    </div></div>`;
-  }
-
-  if(m.type==='wpp-mensaje'){
-    const a=m.alumno;
-    return`<div class="modal-bg" id="modal-overlay"><div class="modal" onclick="event.stopPropagation()">
-      <div class="modal-title">💬 Mensaje WhatsApp</div>
-      <div style="font-size:12px;color:var(--ink3);margin-bottom:12px">Para: <strong>${a.nombre}</strong> — 📱 ${a.telefono}</div>
-      <div class="form-row"><label class="form-label">Tipo de mensaje</label>
-        <select class="inp" id="wpp-tipo" onchange="window._wppChange()">
-          <option value="recordatorio">Recordatorio de pago</option>
-          <option value="mora">Aviso de mora</option>
-          <option value="confirmacion">Confirmación de pago</option>
-          <option value="bienvenida">Bienvenida al instituto</option>
+    <div class="card">
+      <div class="card-title">Alumnos registrados <span id="count-alumnos" style="font-size:12px;color:var(--text2);font-weight:400"></span></div>
+      <div class="search-row">
+        <input id="inp-buscar" placeholder="Buscar nombre o DNI..." oninput="renderAlumnos()" style="max-width:260px">
+        <select id="fil-carrera" onchange="renderAlumnos()" style="max-width:220px">
+          <option value="">Todas las carreras</option>
+          <option value="Enfermería">Enfermería</option>
+          <option value="Instrumentación Quirúrgica">Instrumentación Quirúrgica</option>
+          <option value="Nutrición">Nutrición</option>
         </select>
       </div>
-      <div class="wpp-preview" id="wpp-preview-texto">${getMensaje('recordatorio',a)}</div>
-      <div class="form-actions">
-        <button class="btn" id="modal-cancel">Cancelar</button>
-        <button class="btn wpp" id="abrir-wpp-btn" data-alumno-id="${a.id}">💬 Abrir WhatsApp</button>
+      <div class="table-wrap">
+        <table><thead><tr><th>Nombre</th><th>DNI</th><th>Teléfono</th><th>Carrera</th><th>Año</th><th>Cuotas</th><th></th></tr></thead>
+        <tbody id="tbody-alumnos"></tbody></table>
       </div>
-    </div></div>`;
-  }
+    </div>
+  </div>
 
-  if(m.type==='nuevo-user'||m.type==='edit-user'){
-    const u=m.user||{};
-    return`<div class="modal-bg" id="modal-overlay"><div class="modal" onclick="event.stopPropagation()">
-      <div class="modal-title">${m.type==='nuevo-user'?'Nuevo usuario':'Editar usuario'}</div>
-      <div class="form-row"><label class="form-label">Nombre *</label><input class="inp" id="u-nombre" value="${u.name||''}" placeholder="Nombre completo"></div>
-      <div class="form-row"><label class="form-label">Email *</label><input class="inp" id="u-email" value="${u.email||''}" placeholder="email@ejemplo.com"></div>
-      ${m.type==='nuevo-user'?`<div class="form-row"><label class="form-label">Contraseña *</label><input class="inp" type="password" id="u-pass" placeholder="contraseña"></div>`:''}
-      <div class="form-row"><label class="form-label">Rol</label>
-        <select class="inp" id="u-role">
-          <option value="admin"${(u.role||'')==='admin'?' selected':''}>Admin</option>
-          <option value="secretaria"${(u.role||'secretaria')==='secretaria'?' selected':''}>Secretaria</option>
-          <option value="docente"${(u.role||'')==='docente'?' selected':''}>Docente</option>
+  <!-- COBROS -->
+  <div id="tab-cobros" class="section">
+    <div class="card">
+      <div class="card-title">💳 Registrar pago</div>
+      <div id="recargo-banner" class="recargo-banner">⚠️ Hoy es después del día 15 — se sugiere aplicar recargo de $5.000</div>
+      <div class="form-grid g2">
+        <div><label>Alumno</label><select id="sel-alumno" onchange="autoCompletarCobro()"><option value="">— Seleccionar —</option></select></div>
+        <div><label>Carrera / Año</label><input id="lbl-carrera" readonly></div>
+      </div>
+      <div class="form-grid g4">
+        <div><label>Año de cursado</label><select id="sel-año-cobro"><option value="1">1° año</option><option value="2">2° año</option><option value="3">3° año</option></select></div>
+        <div><label>N° cuota</label>
+          <select id="sel-cuota">
+            <option value="0">Matrícula</option>
+            <option value="1">Cuota 1 (Mar)</option><option value="2">Cuota 2 (Abr)</option>
+            <option value="3">Cuota 3 (May)</option><option value="4">Cuota 4 (Jun)</option>
+            <option value="5">Cuota 5 (Jul)</option><option value="6">Cuota 6 (Ago)</option>
+            <option value="7">Cuota 7 (Sep)</option><option value="8">Cuota 8 (Oct)</option>
+            <option value="9">Cuota 9 (Nov)</option><option value="10">Cuota 10 (Dic)</option>
+          </select>
+        </div>
+        <div><label>Forma de pago</label><select id="sel-forma"><option value="Efectivo">Efectivo</option><option value="Transferencia">Transferencia</option></select></div>
+        <div><label>Fecha de pago</label><input id="inp-fecha" type="date"></div>
+      </div>
+      <div class="form-grid g2">
+        <div><label>Monto base ($)</label><input id="inp-monto" type="number" value="70000" oninput="calcTotal()"></div>
+        <div><label>Recargo (0 si no aplica)</label><input id="inp-recargo" type="number" value="0" oninput="calcTotal()"></div>
+      </div>
+      <div class="total-box">
+        <span style="font-size:13px;color:var(--text2)">Total a cobrar:</span>
+        <span id="lbl-total" style="font-size:22px;font-weight:600;color:var(--blue3)">$70.000</span>
+      </div>
+      <button class="btn btn-primary" onclick="registrarCobro()">Confirmar y generar comprobante</button>
+      <div id="msg-cobro" class="msg"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Últimos pagos</div>
+      <div class="table-wrap">
+        <table><thead><tr><th>Alumno</th><th>Carrera/Año</th><th>Cuota</th><th>Forma</th><th>Fecha</th><th>Monto</th><th>Recargo</th><th>Total</th><th></th></tr></thead>
+        <tbody id="tbody-cobros"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOROSOS -->
+  <div id="tab-morosos" class="section">
+    <div class="card">
+      <div class="card-title">⚠️ Alumnos con cuotas atrasadas</div>
+      <div class="search-row">
+        <select id="fil-morosos-carrera" onchange="renderMorosos()" style="max-width:240px">
+          <option value="">Todas las carreras</option>
+          <option value="Enfermería">Enfermería</option>
+          <option value="Instrumentación Quirúrgica">Instrumentación Quirúrgica</option>
+          <option value="Nutrición">Nutrición</option>
         </select>
       </div>
-      <div class="err-msg" id="u-error"></div>
-      <div class="form-actions">
-        <button class="btn" id="modal-cancel">Cancelar</button>
-        <button class="btn primary" id="modal-save-user" data-id="${u.id||''}">Guardar</button>
+      <div class="table-wrap">
+        <table><thead><tr><th>Alumno</th><th>DNI</th><th>Teléfono</th><th>Carrera</th><th>Año</th><th>Adeuda</th><th>Monto</th><th></th></tr></thead>
+        <tbody id="tbody-morosos"></tbody></table>
       </div>
-    </div></div>`;
-  }
-
-  if(m.type==='generar-cuotas'){
-    const mes=mesActual();
-    const sinCuota=data.alumnos.filter(a=>a.estado==='activo'&&!data.cuotas.find(c=>c.alumnoId===a.id&&c.mes===mes));
-    return`<div class="modal-bg" id="modal-overlay"><div class="modal" onclick="event.stopPropagation()">
-      <div class="modal-title">⚡ Generar cuotas — ${nombreMes(mes)}</div>
-      ${sinCuota.length===0
-        ?`<div class="info-box">✅ Todos los alumnos activos ya tienen cuota para ${nombreMes(mes)}.</div>`
-        :`<p style="font-size:13px;color:var(--ink2);margin-bottom:12px">Generando cuotas para <strong>${sinCuota.length} alumno${sinCuota.length>1?'s':''}</strong>. Ajustá el monto si es necesario:</p>
-        <div style="max-height:220px;overflow-y:auto;border:1px solid var(--border2);border-radius:8px;padding:8px;margin-bottom:14px">
-          ${sinCuota.map(a=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 4px;border-bottom:1px solid var(--border2);font-size:12px">
-            <span>${a.nombre}</span>
-            <input class="inp" type="number" id="gc-monto-${a.id}" value="${a.montoCuota||25000}" style="width:120px;padding:5px 8px;font-size:12px" min="0">
-          </div>`).join('')}
-        </div>`
-      }
-      <div class="form-row"><label class="form-label">Fecha de vencimiento</label><input class="inp" type="date" id="g-vencimiento" value="${mes}-10"></div>
-      <div class="form-actions">
-        <button class="btn" id="modal-cancel">Cancelar</button>
-        ${sinCuota.length>0?`<button class="btn primary" id="confirmar-generar-cuotas">⚡ Generar ${sinCuota.length} cuota${sinCuota.length>1?'s':''}</button>`:''}
-      </div>
-    </div></div>`;
-  }
-  return'';
-}
-
-// ── WPP ──────────────────────────────────────────────────────
-function getMensaje(tipo,alumno){
-  const cuotasPend=data.cuotas.filter(c=>c.alumnoId===alumno.id&&c.estado!=='pagado');
-  const prox=cuotasPend[0]||null;
-  const inst='Instituto Almafuerte';
-  const nom=alumno.nombre.split(' ')[0];
-  if(tipo==='recordatorio')return`Hola ${nom}! 👋\n\nTe recordamos que tenés una cuota de *${prox?fmt(prox.monto):'pendiente'}* con vencimiento el *${prox?fd(prox.fechaVencimiento):'próximamente'}*.\n\nPodés abonar por transferencia y enviarnos el comprobante.\n\n¡Gracias! 🙏\n— ${inst}`;
-  if(tipo==='mora')return`Hola ${nom},\n\nTe informamos que tenés cuotas *vencidas* en ${inst}.\n\nTe pedimos que te comuniques con nosotros para regularizar tu situación.\n\n📞 Estamos a tu disposición.\n— ${inst}`;
-  if(tipo==='confirmacion')return`Hola ${nom}! ✅\n\n*Confirmamos que recibimos tu pago correctamente.*\n\nQuedamos a disposición ante cualquier consulta.\n\n¡Muchas gracias! 😊\n— ${inst}`;
-  if(tipo==='bienvenida')return`¡Bienvenida/o ${nom}! 🎉\n\nTe damos la bienvenida al *${inst}*.\n\nCarrera: *${alumno.carrera||alumno.curso||'—'}* — Turno ${alumno.turno}\n\nCualquier consulta no dudes en escribirnos.\n— ${inst}`;
-  return'';
-}
-
-function abrirWpp(alumnoId,tipo){
-  const a=getA(alumnoId);
-  if(!a){alert('Alumno no encontrado.');return;}
-  if(!a.telefono){alert('El alumno no tiene teléfono registrado.');return;}
-  const texto=getMensaje(tipo||'recordatorio',a);
-  const tel=a.telefono.replace(/\D/g,'');
-  window.open(`https://wa.me/549${tel}?text=${encodeURIComponent(texto)}`,'_blank');
-}
-
-
-window._onLocalidadChange = function(){
-  const loc = document.getElementById('a-localidad')?.value;
-  const carreraEl = document.getElementById('a-carrera');
-  const anioEl = document.getElementById('a-anio');
-  if(!carreraEl || !anioEl) return;
-  if(!loc || !LOCALIDADES[loc]){
-    carreraEl.innerHTML = '<option value="">— Seleccioná localidad —</option>';
-    anioEl.innerHTML = '<option value="">— Año —</option>';
-    return;
-  }
-  const carreras = Object.keys(LOCALIDADES[loc].carreras);
-  carreraEl.innerHTML = '<option value="">— Seleccioná carrera —</option>' + carreras.map(c=>`<option value="${c}">${c}</option>`).join('');
-  anioEl.innerHTML = '<option value="">— Año —</option>';
-};
-
-window._onCarreraChange = function(){
-  const loc = document.getElementById('a-localidad')?.value;
-  const carrera = document.getElementById('a-carrera')?.value;
-  const anioEl = document.getElementById('a-anio');
-  if(!anioEl) return;
-  if(!loc || !carrera || !LOCALIDADES[loc] || !LOCALIDADES[loc].carreras[carrera]){
-    anioEl.innerHTML = '<option value="">— Año —</option>';
-    return;
-  }
-  const años = LOCALIDADES[loc].carreras[carrera];
-  anioEl.innerHTML = '<option value="">— Año —</option>' + años.map(n=>`<option value="${n}">${AÑOS_LABEL[n]}</option>`).join('');
-};
-
-window._wppChange=function(){
-  const tipo=document.getElementById('wpp-tipo')?.value;
-  const prev=document.getElementById('wpp-preview-texto');
-  if(prev&&modal?.alumno)prev.textContent=getMensaje(tipo,modal.alumno);
-};
-
-// ── COBROS HELPERS ───────────────────────────────────────────
-function cbActualizarCuotas(){
-  const alumnoId=parseInt(document.getElementById('cb-alumno')?.value)||0;
-  const wrap=document.getElementById('cb-cuotas-wrap');
-  const sel=document.getElementById('cb-cuota');
-  const montoInp=document.getElementById('cb-monto');
-  if(!alumnoId){if(wrap)wrap.style.display='none';if(montoInp)montoInp.value='';return;}
-  const cuotas=data.cuotas.filter(c=>c.alumnoId===alumnoId&&c.estado!=='pagado');
-  if(sel)sel.innerHTML='<option value="">— Seleccioná una cuota —</option>'+cuotas.map(c=>`<option value="${c.id}">${nombreMes(c.mes)} ${añoMes(c.mes)} — ${fmt(c.monto)} — vence ${fd(c.fechaVencimiento)}</option>`).join('');
-  if(wrap)wrap.style.display='block';
-  if(montoInp)montoInp.value='';
-}
-
-function cbActualizarMonto(){
-  const cuotaId=parseInt(document.getElementById('cb-cuota')?.value)||0;
-  const c=data.cuotas.find(x=>x.id===cuotaId);
-  const montoInp=document.getElementById('cb-monto');
-  if(c&&montoInp)montoInp.value=c.monto;
-}
-
-// ── BIND EVENTS ──────────────────────────────────────────────
-function bindEvents(){
-  const q=id=>document.getElementById(id);
-
-  // Cerrar modal al click en overlay
-  const overlay=q('modal-overlay');
-  if(overlay)overlay.onclick=()=>{modal=null;render();};
-
-  // LOGIN
-  function doLogin(){
-    const email=(q('l-email')?.value||'').trim();
-    const pass=(q('l-pass')?.value||'').trim();
-    const u=data.users.find(x=>x.email===email&&x.password===pass);
-    if(u){currentUser=u;tab='dashboard';modal=null;render();}
-    else{const err=q('l-err');if(err)err.style.display='block';}
-  }
-  if(q('login-btn'))q('login-btn').onclick=doLogin;
-  if(q('l-pass'))q('l-pass').onkeydown=e=>{if(e.key==='Enter')doLogin();};
-
-  if(q('logout-btn'))q('logout-btn').onclick=()=>{currentUser=null;modal=null;render();};
-
-  // BACKUP
-  if(q('backup-btn'))q('backup-btn').onclick=()=>{
-    const datos = localStorage.getItem('almafuerte_v1') || '{}';
-    const blob = new Blob([datos], {type:'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    const fecha = new Date().toISOString().split('T')[0];
-    a.href = url;
-    a.download = 'almafuerte-backup-' + fecha + '.json';
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  // TABS
-  document.querySelectorAll('.nav-tab').forEach(b=>{b.onclick=()=>{tab=b.dataset.tab;busqueda='';modal=null;render();};});
-
-  // BÚSQUEDA
-  if(q('busqueda-inp'))q('busqueda-inp').oninput=e=>{busqueda=e.target.value;render();};
-
-  // CERRAR MODAL (botón)
-  if(q('modal-cancel'))q('modal-cancel').onclick=()=>{modal=null;render();};
-
-  // NUEVO ALUMNO
-  if(q('nuevo-alumno-btn'))q('nuevo-alumno-btn').onclick=()=>{modal={type:'nuevo-alumno'};render();};
-
-  // GUARDAR ALUMNO (nuevo y editar)
-  if(q('modal-save-alumno'))q('modal-save-alumno').onclick=()=>{
-    const nombre=(q('a-nombre')?.value||'').trim();
-    const dni=(q('a-dni')?.value||'').trim();
-    const tel=(q('a-tel')?.value||'').trim();
-    const email=(q('a-email')?.value||'').trim();
-    const localidad=(q('a-localidad')?.value||'').trim();
-    const carrera=(q('a-carrera')?.value||'').trim();
-    const anio=parseInt(q('a-anio')?.value)||0;
-    const curso=(q('a-curso')?.value||'').trim();
-    const turno=q('a-turno')?.value||'Mañana';
-    const fecha=q('a-fecha')?.value||hoy();
-    const monto=parseFloat(q('a-monto')?.value)||0;
-    const estado=q('a-estado')?.value||'activo';
-    const errDiv=q('a-error');
-    if(!nombre||!dni||!tel||!curso){
-      if(errDiv){errDiv.textContent='⚠️ Nombre, DNI, teléfono y curso son obligatorios.';errDiv.style.display='block';}
-      return;
-    }
-    const editId=q('modal-save-alumno').dataset.id;
-    if(editId){
-      const a=data.alumnos.find(x=>x.id===Number(editId));
-      if(a){Object.assign(a,{nombre,dni,telefono:tel,email,localidad,carrera,anio,curso,turno,fechaAlta:fecha,montoCuota:monto,estado});}
-    } else {
-      data.alumnos.unshift({id:data.nextId.alumno++,nombre,dni,telefono:tel,email,localidad,carrera,anio,curso,turno,fechaAlta:fecha,montoCuota:monto,estado:'activo'});
-    }
-    save(data);modal=null;render();
-  };
-
-  // VER / EDITAR ALUMNO
-  document.querySelectorAll('[data-ver-alumno]').forEach(b=>{b.onclick=()=>{const a=getA(b.dataset.verAlumno);if(a){modal={type:'ver-alumno',alumno:a};render();}};});
-  document.querySelectorAll('[data-edit-alumno]').forEach(b=>{b.onclick=()=>{const a=getA(b.dataset.editAlumno);if(a){modal={type:'edit-alumno',alumno:a};render();}};});
-
-  // COBRAR CUOTA → genera recibo
-  document.querySelectorAll('[data-cobrar]').forEach(b=>{b.onclick=()=>{
-    const c=data.cuotas.find(x=>x.id===Number(b.dataset.cobrar));
-    if(!c)return;
-    c.estado='pagado';
-    c.fechaPago=hoy();
-    c.medioPago='efectivo';
-    save(data);
-    modal={type:'comp-cuota',cuota:c};
-    render();
-  };});
-
-  // VER RECIBO
-  document.querySelectorAll('[data-ver-recibo]').forEach(b=>{b.onclick=()=>{const c=data.cuotas.find(x=>x.id===Number(b.dataset.verRecibo));if(c){modal={type:'comp-cuota',cuota:c};render();}};});
-
-  // WPP DESDE CUOTA
-  document.querySelectorAll('[data-wpp-cuota]').forEach(b=>{b.onclick=()=>{const c=data.cuotas.find(x=>x.id===Number(b.dataset.wppCuota));const a=c?getA(c.alumnoId):null;if(a){modal={type:'wpp-mensaje',alumno:a};render();}};});
-
-  // WPP ALUMNO
-  document.querySelectorAll('[data-wpp-alumno]').forEach(b=>{b.onclick=()=>{const a=getA(b.dataset.wppAlumno);if(a){modal={type:'wpp-mensaje',alumno:a};render();}};});
-
-  // ABRIR WPP (desde modal mensaje)
-  if(q('abrir-wpp-btn'))q('abrir-wpp-btn').onclick=()=>{
-    const tipo=q('wpp-tipo')?.value||'recordatorio';
-    abrirWpp(q('abrir-wpp-btn').dataset.alumnoId,tipo);
-  };
-
-  // WPP DESDE RECIBO (confirmación)
-  if(q('wpp-desde-recibo'))q('wpp-desde-recibo').onclick=()=>{
-    const c=data.cuotas.find(x=>x.id===Number(q('wpp-desde-recibo').dataset.cuotaId));
-    if(c)abrirWpp(c.alumnoId,'confirmacion');
-  };
-
-  // COBROS TAB
-  if(q('cb-alumno'))q('cb-alumno').onchange=cbActualizarCuotas;
-  if(q('cb-cuota'))q('cb-cuota').onchange=cbActualizarMonto;
-  if(q('confirmar-cobro-btn'))q('confirmar-cobro-btn').onclick=()=>{
-    const alumnoId=parseInt(q('cb-alumno')?.value)||0;
-    const cuotaId=parseInt(q('cb-cuota')?.value)||0;
-    const monto=parseFloat(q('cb-monto')?.value)||0;
-    const fecha=q('cb-fecha')?.value||hoy();
-    const medio=q('cb-medio')?.value||'transferencia';
-    const errDiv=q('cb-error');
-    if(!alumnoId){if(errDiv){errDiv.textContent='⚠️ Seleccioná un alumno.';errDiv.style.display='block';}return;}
-    if(!cuotaId){if(errDiv){errDiv.textContent='⚠️ Seleccioná una cuota.';errDiv.style.display='block';}return;}
-    if(!monto||monto<=0){if(errDiv){errDiv.textContent='⚠️ Ingresá un monto válido.';errDiv.style.display='block';}return;}
-    if(errDiv)errDiv.style.display='none';
-    const c=data.cuotas.find(x=>x.id===cuotaId);
-    if(!c){alert('Cuota no encontrada.');return;}
-    c.estado='pagado';c.fechaPago=fecha;c.monto=monto;c.medioPago=medio;
-    save(data);modal={type:'comp-cuota',cuota:c};render();
-  };
-
-  // GENERAR CUOTAS
-  if(q('generar-cuotas-btn'))q('generar-cuotas-btn').onclick=()=>{modal={type:'generar-cuotas'};render();};
-  if(q('confirmar-generar-cuotas'))q('confirmar-generar-cuotas').onclick=()=>{
-    const mes=mesActual();
-    const venc=q('g-vencimiento')?.value||mes+'-10';
-    const sinCuota=data.alumnos.filter(a=>a.estado==='activo'&&!data.cuotas.find(c=>c.alumnoId===a.id&&c.mes===mes));
-    sinCuota.forEach(a=>{
-      const monto=parseFloat(document.getElementById(`gc-monto-${a.id}`)?.value)||a.montoCuota||25000;
-      data.cuotas.push({id:data.nextId.cuota++,alumnoId:a.id,mes,monto,estado:'pendiente',fechaPago:null,fechaVencimiento:venc,medioPago:null});
-    });
-    save(data);modal=null;tab='cuotas';render();
-  };
-
-  // USUARIOS
-  if(q('nuevo-user-btn'))q('nuevo-user-btn').onclick=()=>{modal={type:'nuevo-user'};render();};
-  if(q('modal-save-user'))q('modal-save-user').onclick=()=>{
-    const nombre=(q('u-nombre')?.value||'').trim();
-    const email=(q('u-email')?.value||'').trim();
-    const pass=(q('u-pass')?.value||'').trim();
-    const role=q('u-role')?.value||'secretaria';
-    const errDiv=q('u-error');
-    const editId=q('modal-save-user').dataset.id;
-    if(!nombre||!email){if(errDiv){errDiv.textContent='⚠️ Nombre y email son obligatorios.';errDiv.style.display='block';}return;}
-    if(editId){
-      const u=data.users.find(x=>x.id===Number(editId));
-      if(u){u.name=nombre;u.email=email;u.role=role;}
-    } else {
-      if(!pass){if(errDiv){errDiv.textContent='⚠️ Ingresá una contraseña.';errDiv.style.display='block';}return;}
-      if(data.users.find(x=>x.email===email)){if(errDiv){errDiv.textContent='⚠️ Ya existe un usuario con ese email.';errDiv.style.display='block';}return;}
-      data.users.push({id:data.nextId.user++,name:nombre,email,password:pass,role});
-    }
-    save(data);modal=null;render();
-  };
-  document.querySelectorAll('[data-edit-user]').forEach(b=>{b.onclick=()=>{const u=data.users.find(x=>x.id===Number(b.dataset.editUser));if(u){modal={type:'edit-user',user:u};render();}};});
-  document.querySelectorAll('[data-del-user]').forEach(b=>{b.onclick=()=>{if(!confirm('¿Eliminar este usuario?'))return;data.users=data.users.filter(u=>u.id!==Number(b.dataset.delUser));save(data);render();};});
-}
-
-render();
-</script>
-
-<div style="position:fixed;bottom:12px;right:16px;z-index:9999;pointer-events:none;user-select:none;opacity:0.45;display:flex;align-items:center;gap:5px;background:rgba(26,18,8,0.06);padding:5px 10px;border-radius:20px;border:1px solid rgba(26,18,8,0.1)">
-  <span style="font-size:13px">👑</span>
-  <span style="font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;color:#1a1208;letter-spacing:1.2px;text-transform:uppercase;white-space:nowrap">Nexo Sistemas</span>
+    </div>
+  </div>
 </div>
+
+<!-- MODAL DETALLE -->
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-title" id="modal-titulo"></div><div class="modal-sub" id="modal-subtitulo"></div></div>
+      <button class="btn btn-sm" onclick="document.getElementById('modal-bg').classList.remove('open')">✕</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- MODAL COMPROBANTE -->
+<div class="modal-bg" id="comprobante-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" style="max-width:700px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem" class="no-print">
+      <span style="font-size:15px;font-weight:500">Comprobante de pago</span>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" onclick="window.print()">Imprimir / PDF</button>
+        <button class="btn btn-sm" onclick="document.getElementById('comprobante-modal').classList.remove('open')">✕</button>
+      </div>
+    </div>
+    <div id="print-area"><div class="comp-wrap" id="comp-contenido"></div></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ════════════════════════════════════
+// FIREBASE CONFIG — REEMPLAZAR
+// ════════════════════════════════════
+const FB_CONFIG = {
+  apiKey: "AIzaSyDu58MvSN8h0Hklb-RpkkBf9QvF5mqii2c",
+  authDomain: "instituto-almafuerte.firebaseapp.com",
+  projectId: "instituto-almafuerte",
+  storageBucket: "instituto-almafuerte.firebasestorage.app",
+  messagingSenderId: "612619707603",
+  appId: "1:612619707603:web:798ae3fd9f0ca441b32026"
+};
+
+let db = null, fbReady = false;
+try {
+  const fbApp = initializeApp(FB_CONFIG);
+  db = getFirestore(fbApp);
+  fbReady = true;
+} catch(e) {}
+
+async function fbGet(coleccion, fallback) {
+  try {
+    if(fbReady) {
+      const snap = await getDoc(doc(db, "almafuerte", coleccion));
+      if(snap.exists()) return JSON.parse(snap.data().payload);
+    }
+  } catch(e) {}
+  try { const r = localStorage.getItem('alma_'+coleccion); return r ? JSON.parse(r) : null; } catch(e) { return null; }
+}
+async function fbSet(coleccion, data) {
+  const payload = JSON.stringify(data);
+  try { if(fbReady) await setDoc(doc(db, "almafuerte", coleccion), { payload }); } catch(e) {}
+  try { localStorage.setItem('alma_'+coleccion, payload); } catch(e) {}
+}
+
+// ════════════════════════════════════
+// CONSTANTES
+// ════════════════════════════════════
+const PASSWORD = 'Thiago12';
+const MONTO_BASE = 70000;
+const RECARGO_STD = 5000;
+const CUOTAS_POR_AÑO = 11;
+const MESES = ['','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const RESOLUCIONES = { 'Enfermería':'___________', 'Instrumentación Quirúrgica':'___________', 'Nutrición':'___________' };
+
+let alumnos = [], pagos = [], nroComprobante = 1;
+let chartCobros = null, chartCarreras = null;
+
+async function cargarDatos() {
+  alumnos = (await fbGet('alumnos')) || [];
+  pagos = (await fbGet('pagos')) || [];
+  const cfg = await fbGet('config');
+  nroComprobante = cfg?.nro || 1;
+}
+const guardarAlumnos = () => fbSet('alumnos', alumnos);
+const guardarPagos   = () => fbSet('pagos', pagos);
+const guardarNro     = () => fbSet('config', { nro: nroComprobante });
+
+// ════════════════════════════════════
+// AUTH
+// ════════════════════════════════════
+async function login() {
+  const v = document.getElementById('inp-pass').value;
+  const err = document.getElementById('pass-error');
+  if(v !== PASSWORD) { err.textContent = 'Contraseña incorrecta.'; return; }
+  err.textContent = 'Cargando...';
+  await cargarDatos();
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  renderDashboard();
+}
+function logout() {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'block';
+  document.getElementById('inp-pass').value = '';
+  document.getElementById('pass-error').textContent = '';
+}
+window.login = login; window.logout = logout;
+
+// ════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════
+const fmt = n => '$' + (n||0).toLocaleString('es-AR');
+const nombreCuota = i => i===0 ? 'Matrícula' : 'Cuota N° '+i+' ('+MESES[i]+')';
+const nombreCuotaCorto = i => i===0 ? 'Mat.' : 'C'+i;
+const getPagosAlumno = id => pagos.filter(p => p.alumnoId===id);
+const cuotaPagada = (id,año,c) => pagos.some(p => p.alumnoId===id && p.año==año && p.cuota==c);
+function calcDeuda(id, añoCursando) {
+  let d = [];
+  for(let a=1; a<=añoCursando; a++)
+    for(let c=0; c<CUOTAS_POR_AÑO; c++)
+      if(!cuotaPagada(id,a,c)) d.push({año:a,cuota:c});
+  return d;
+}
+function setMsg(id, texto, ok) {
+  const el = document.getElementById(id);
+  el.className = 'msg '+(ok?'ok':'err');
+  el.textContent = texto;
+  if(ok) setTimeout(()=>el.textContent='',4000);
+}
+const esPostDia15 = () => new Date().getDate()>15;
+const getCuotaActual = () => { const m=new Date().getMonth()+1; if(m<3)return 0; if(m>12)return 10; return m-2; };
+function calcTotal() {
+  const m = parseInt(document.getElementById('inp-monto').value)||0;
+  const r = parseInt(document.getElementById('inp-recargo').value)||0;
+  document.getElementById('lbl-total').textContent = fmt(m+r);
+}
+window.calcTotal = calcTotal;
+
+function showTab(t, btn) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(t==='dashboard') renderDashboard();
+  if(t==='alumnos') renderAlumnos();
+  if(t==='cobros') initCobros();
+  if(t==='morosos') renderMorosos();
+}
+window.showTab = showTab;
+
+// ════════════════════════════════════
+// DASHBOARD
+// ════════════════════════════════════
+function renderDashboard() {
+  const cobrado = pagos.reduce((s,p)=>s+(p.total||0),0);
+  let adeudado=0, morososCount=0;
+  alumnos.forEach(a=>{ const d=calcDeuda(a.id,a.año).length; adeudado+=d*MONTO_BASE; if(d>0)morososCount++; });
+
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat"><div class="stat-accent" style="background:linear-gradient(90deg,var(--blue),var(--blue2))"></div><div class="stat-ico">👥</div><div class="stat-label">Alumnos</div><div class="stat-val" style="color:var(--blue3)">${alumnos.length}</div></div>
+    <div class="stat"><div class="stat-accent" style="background:linear-gradient(90deg,var(--green),#15b87a)"></div><div class="stat-ico">✅</div><div class="stat-label">Total cobrado</div><div class="stat-val" style="color:var(--green)">${fmt(cobrado)}</div></div>
+    <div class="stat"><div class="stat-accent" style="background:linear-gradient(90deg,var(--red),#cc2233)"></div><div class="stat-ico">📋</div><div class="stat-label">Total adeudado</div><div class="stat-val" style="color:var(--red)">${fmt(adeudado)}</div></div>
+    <div class="stat"><div class="stat-accent" style="background:linear-gradient(90deg,var(--amber),#d97706)"></div><div class="stat-ico">⚠️</div><div class="stat-label">Con deuda</div><div class="stat-val" style="color:var(--amber)">${morososCount}</div></div>`;
+
+  const tbody = document.getElementById('tbody-dashboard');
+  tbody.innerHTML = !alumnos.length
+    ? '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text2)">Sin alumnos cargados</td></tr>'
+    : alumnos.map(a => {
+        const pagas = getPagosAlumno(a.id).length;
+        const deuda = calcDeuda(a.id,a.año);
+        return `<tr>
+          <td style="font-weight:500">${a.nombre}</td>
+          <td><span class="badge-carrera">${a.carrera}</span></td>
+          <td><span class="badge-año">${a.año}° año</span></td>
+          <td>${pagas}/${a.año*CUOTAS_POR_AÑO}</td>
+          <td>${deuda.length}</td>
+          <td>${deuda.length>0?'<span style="color:var(--red);font-weight:500">'+fmt(deuda.length*MONTO_BASE)+'</span>':'—'}</td>
+          <td>${deuda.length===0?'<span class="badge badge-ok">Al día</span>':'<span class="badge badge-late">'+deuda.length+' atrasada'+(deuda.length>1?'s':'')+'</span>'}</td>
+        </tr>`;
+      }).join('');
+
+  // Charts
+  const meses = {};
+  pagos.forEach(p => { if(!p.fecha)return; const m=p.fecha.substring(0,7); meses[m]=(meses[m]||0)+(p.total||0); });
+  const sortedM = Object.keys(meses).sort().slice(-6);
+  const cvEl = document.getElementById('chart-cobros');
+  if(chartCobros) chartCobros.destroy();
+  chartCobros = new Chart(cvEl, {
+    type:'bar',
+    data:{
+      labels: sortedM.map(m=>{ const[y,mo]=m.split('-'); return ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'][parseInt(mo)]+' '+y.slice(2); }),
+      datasets:[{ data:sortedM.map(m=>meses[m]), backgroundColor:'rgba(45,125,210,0.6)', borderColor:'rgba(91,163,245,0.8)', borderWidth:1, borderRadius:6 }]
+    },
+    options:{ responsive:true, plugins:{legend:{display:false}}, scales:{
+      x:{ticks:{color:'#7a9cc5',font:{size:10}},grid:{color:'rgba(45,125,210,0.08)'}},
+      y:{ticks:{color:'#7a9cc5',font:{size:10},callback:v=>'$'+Math.round(v/1000)+'k'},grid:{color:'rgba(45,125,210,0.08)'}}
+    }}
+  });
+
+  const carreraCount = {};
+  alumnos.forEach(a=>{ carreraCount[a.carrera]=(carreraCount[a.carrera]||0)+1; });
+  const ccEl = document.getElementById('chart-carreras');
+  if(chartCarreras) chartCarreras.destroy();
+  chartCarreras = new Chart(ccEl, {
+    type:'doughnut',
+    data:{
+      labels:Object.keys(carreraCount),
+      datasets:[{ data:Object.values(carreraCount), backgroundColor:['#2d7dd2','#f5c542','#1fd68a'], borderWidth:0, hoverOffset:6 }]
+    },
+    options:{ responsive:true, plugins:{legend:{position:'bottom',labels:{color:'#7a9cc5',font:{size:11},padding:10,boxWidth:12}}}, cutout:'65%' }
+  });
+}
+
+// ════════════════════════════════════
+// ALUMNOS
+// ════════════════════════════════════
+async function agregarAlumno() {
+  const nombre=document.getElementById('inp-nombre').value.trim();
+  const dni=document.getElementById('inp-dni').value.trim();
+  const tel=document.getElementById('inp-tel').value.trim();
+  const carrera=document.getElementById('inp-carrera').value;
+  const año=parseInt(document.getElementById('inp-año').value);
+  const inicio=document.getElementById('inp-inicio').value.trim();
+  if(!nombre||!dni){setMsg('msg-alumno','Nombre y DNI son obligatorios.',false);return;}
+  if(alumnos.some(a=>a.dni===dni)){setMsg('msg-alumno','Ya existe un alumno con ese DNI.',false);return;}
+  alumnos.push({id:Date.now().toString(),nombre,dni,tel,carrera,año,inicio});
+  await guardarAlumnos();
+  ['inp-nombre','inp-dni','inp-tel','inp-inicio'].forEach(id=>document.getElementById(id).value='');
+  setMsg('msg-alumno','✓ Alumno agregado correctamente.',true);
+  renderAlumnos();
+}
+window.agregarAlumno = agregarAlumno;
+
+function renderAlumnos() {
+  const buscar=(document.getElementById('inp-buscar')?.value||'').toLowerCase();
+  const filCar=document.getElementById('fil-carrera')?.value||'';
+  const lista=alumnos.filter(a=>(a.nombre.toLowerCase().includes(buscar)||a.dni.includes(buscar))&&(!filCar||a.carrera===filCar));
+  document.getElementById('count-alumnos').textContent=lista.length+' alumno(s)';
+  const tbody=document.getElementById('tbody-alumnos');
+  if(!lista.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text2)">Sin alumnos</td></tr>';return;}
+  tbody.innerHTML=lista.map(a=>{
+    const pagas=getPagosAlumno(a.id).length;
+    return`<tr>
+      <td style="font-weight:500">${a.nombre}</td><td>${a.dni}</td><td>${a.tel||'—'}</td>
+      <td><span class="badge-carrera">${a.carrera}</span></td>
+      <td><span class="badge-año">${a.año}° año</span></td>
+      <td><button class="btn btn-sm" onclick="verDetalle('${a.id}')">Ver (${pagas}/${a.año*CUOTAS_POR_AÑO})</button></td>
+      <td><button class="btn btn-danger btn-sm" onclick="eliminarAlumno('${a.id}')">Eliminar</button></td>
+    </tr>`;
+  }).join('');
+}
+window.renderAlumnos = renderAlumnos;
+
+async function eliminarAlumno(id) {
+  if(!confirm('¿Eliminar este alumno y todos sus pagos?'))return;
+  alumnos=alumnos.filter(a=>a.id!==id);
+  pagos=pagos.filter(p=>p.alumnoId!==id);
+  await guardarAlumnos();await guardarPagos();
+  renderAlumnos();
+}
+window.eliminarAlumno = eliminarAlumno;
+
+function verDetalle(id) {
+  const a=alumnos.find(x=>x.id===id);if(!a)return;
+  document.getElementById('modal-titulo').textContent=a.nombre;
+  document.getElementById('modal-subtitulo').textContent=a.carrera+' · '+a.año+'° año · DNI '+a.dni;
+  let html='';
+  for(let año=1;año<=3;año++){
+    const activo=año<=a.año;
+    html+=`<div style="margin-bottom:1rem"><div style="font-size:12px;font-weight:500;color:var(--text2);margin-bottom:6px">${año}° año ${!activo?'<span style="opacity:.4;font-size:10px">(pendiente)</span>':''}</div><div class="cuotas-grid">`;
+    for(let c=0;c<CUOTAS_POR_AÑO;c++){
+      const pago=pagos.find(p=>p.alumnoId===id&&p.año==año&&p.cuota==c);
+      const clase=!activo?'pendiente':pago?'pagada':'vencida';
+      const forma=pago?(pago.forma==='Efectivo'?'E':'T'):'';
+      html+=`<div class="cuota-box ${clase}" title="${nombreCuota(c)}${pago?' — '+pago.forma+' '+fmt(pago.total):activo?' — Sin pagar':''}">${nombreCuotaCorto(c)}<br>${pago?'✓'+forma:activo?'✗':''}</div>`;
+    }
+    html+=`</div></div>`;
+  }
+  const deuda=calcDeuda(id,a.año);
+  const totalPagado=getPagosAlumno(id).reduce((s,p)=>s+(p.total||0),0);
+  html+=`<hr style="border:none;border-top:1px solid var(--border);margin:1rem 0">
+    <div style="display:flex;gap:1.5rem;flex-wrap:wrap">
+      <div><div style="font-size:11px;color:var(--text2)">Cuotas pagas</div><div style="font-size:20px;font-weight:600;color:var(--green)">${getPagosAlumno(id).length}</div></div>
+      <div><div style="font-size:11px;color:var(--text2)">Total cobrado</div><div style="font-size:20px;font-weight:600;color:var(--green)">${fmt(totalPagado)}</div></div>
+      <div><div style="font-size:11px;color:var(--text2)">Adeuda</div><div style="font-size:20px;font-weight:600;color:var(--red)">${deuda.length} cuota${deuda.length!==1?'s':''}</div></div>
+      <div><div style="font-size:11px;color:var(--text2)">Monto adeudado</div><div style="font-size:20px;font-weight:600;color:var(--red)">${fmt(deuda.length*MONTO_BASE)}</div></div>
+    </div>`;
+  document.getElementById('modal-body').innerHTML=html;
+  document.getElementById('modal-bg').classList.add('open');
+}
+window.verDetalle = verDetalle;
+
+// ════════════════════════════════════
+// COBROS
+// ════════════════════════════════════
+function initCobros() {
+  document.getElementById('sel-alumno').innerHTML='<option value="">— Seleccionar —</option>'+
+    alumnos.map(a=>`<option value="${a.id}">${a.nombre} (${a.dni})</option>`).join('');
+  document.getElementById('inp-fecha').value=new Date().toISOString().split('T')[0];
+  document.getElementById('sel-cuota').value=getCuotaActual();
+  const post15=esPostDia15();
+  document.getElementById('recargo-banner').style.display=post15?'block':'none';
+  document.getElementById('inp-recargo').value=post15?RECARGO_STD:0;
+  calcTotal();
+  renderUltimosCobros();
+}
+function autoCompletarCobro() {
+  const id=document.getElementById('sel-alumno').value;
+  const a=alumnos.find(x=>x.id===id);
+  document.getElementById('lbl-carrera').value=a?a.carrera+' · '+a.año+'° año':'';
+  if(a)document.getElementById('sel-año-cobro').value=a.año;
+}
+window.autoCompletarCobro = autoCompletarCobro;
+
+async function registrarCobro() {
+  const alumnoId=document.getElementById('sel-alumno').value;
+  const año=parseInt(document.getElementById('sel-año-cobro').value);
+  const cuota=parseInt(document.getElementById('sel-cuota').value);
+  const forma=document.getElementById('sel-forma').value;
+  const fecha=document.getElementById('inp-fecha').value;
+  const monto=parseInt(document.getElementById('inp-monto').value)||0;
+  const recargo=parseInt(document.getElementById('inp-recargo').value)||0;
+  const total=monto+recargo;
+  if(!alumnoId){setMsg('msg-cobro','Seleccioná un alumno.',false);return;}
+  if(!fecha){setMsg('msg-cobro','Ingresá la fecha.',false);return;}
+  if(cuotaPagada(alumnoId,año,cuota)){setMsg('msg-cobro','Esta cuota ya está registrada.',false);return;}
+  const alumno=alumnos.find(a=>a.id===alumnoId);
+  const nro=nroComprobante;
+  const pago={id:Date.now().toString(),alumnoId,año,cuota,forma,fecha,monto,recargo,total,nombre:alumno.nombre,carrera:alumno.carrera,dni:alumno.dni,nroComprobante:nro};
+  pagos.unshift(pago);
+  nroComprobante++;
+  await guardarPagos();await guardarNro();
+  setMsg('msg-cobro','✓ Pago registrado. Generando comprobante...',true);
+  renderUltimosCobros();
+  setTimeout(()=>mostrarComprobante(pago),400);
+}
+window.registrarCobro = registrarCobro;
+
+function renderUltimosCobros() {
+  const tbody=document.getElementById('tbody-cobros');
+  if(!pagos.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--text2)">Sin pagos registrados</td></tr>';return;}
+  tbody.innerHTML=pagos.slice(0,25).map(p=>`<tr>
+    <td style="font-weight:500">${p.nombre}</td>
+    <td><span class="badge-carrera" style="font-size:10px">${p.carrera||''} ${p.año}°</span></td>
+    <td>${nombreCuota(p.cuota)}</td>
+    <td><span class="badge ${p.forma==='Efectivo'?'badge-ef':'badge-tr'}">${p.forma}</span></td>
+    <td>${p.fecha?p.fecha.split('-').reverse().join('/'):'—'}</td>
+    <td>${fmt(p.monto||0)}</td>
+    <td>${p.recargo?'<span class="badge badge-recargo">+'+fmt(p.recargo)+'</span>':'—'}</td>
+    <td style="font-weight:500">${fmt(p.total||0)}</td>
+    <td style="display:flex;gap:4px">
+      <button class="btn btn-sm" onclick="mostrarComprobante(window._pagos.find(x=>x.id==='${p.id}'))">Rep.</button>
+      <button class="btn btn-danger btn-sm" onclick="eliminarPago('${p.id}')">✕</button>
+    </td>
+  </tr>`).join('');
+  window._pagos = pagos;
+}
+async function eliminarPago(id) {
+  if(!confirm('¿Eliminar este pago?'))return;
+  pagos=pagos.filter(p=>p.id!==id);
+  await guardarPagos();
+  renderUltimosCobros();
+}
+window.eliminarPago = eliminarPago;
+
+// ════════════════════════════════════
+// MOROSOS
+// ════════════════════════════════════
+function renderMorosos() {
+  const fil=document.getElementById('fil-morosos-carrera')?.value||'';
+  const morosos=alumnos.filter(a=>calcDeuda(a.id,a.año).length>0&&(!fil||a.carrera===fil));
+  const tbody=document.getElementById('tbody-morosos');
+  if(!morosos.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text2)">🎉 No hay alumnos con deuda</td></tr>';return;}
+  tbody.innerHTML=morosos.map(a=>{
+    const deuda=calcDeuda(a.id,a.año);
+    return`<tr>
+      <td style="font-weight:500">${a.nombre}</td><td>${a.dni}</td><td>${a.tel||'—'}</td>
+      <td><span class="badge-carrera">${a.carrera}</span></td>
+      <td><span class="badge-año">${a.año}° año</span></td>
+      <td><span class="badge badge-late">${deuda.length} cuota${deuda.length>1?'s':''}</span></td>
+      <td style="font-weight:500;color:var(--red)">${fmt(deuda.length*MONTO_BASE)}</td>
+      <td><button class="btn btn-sm" onclick="verDetalle('${a.id}')">Ver detalle</button></td>
+    </tr>`;
+  }).join('');
+}
+window.renderMorosos = renderMorosos;
+
+// ════════════════════════════════════
+// COMPROBANTE
+// ════════════════════════════════════
+function mostrarComprobante(pago) {
+  if(!pago)return;
+  const fechaFmt=pago.fecha?pago.fecha.split('-').reverse().join('/'):'—';
+  const nroFmt=String(pago.nroComprobante).padStart(6,'0');
+  const resolucion=RESOLUCIONES[pago.carrera]||'___________';
+  const montoLetras=numToLetras(pago.total);
+  document.getElementById('comp-contenido').innerHTML=`
+  <div class="comp-header">
+    <div class="comp-header-left">
+      <div style="width:64px;height:64px;background:#1a3a6b;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;text-align:center;padding:4px;flex-shrink:0">INST.<br>ALMA<br>FUERTE</div>
+      <div>
+        <div class="comp-inst">INSTITUTO ALMAFUERTE</div>
+        <div class="comp-inst-sub">Mendoza 990 · Escuela 187 "Miguel Goyena"</div>
+        <div class="comp-resolucion">Carrera: ${pago.carrera} · ${pago.año}° año</div>
+        <div class="comp-resolucion">Res. Provincial N°: ${resolucion}</div>
+      </div>
+    </div>
+    <div class="comp-num"><div class="comp-num-label">Comprobante N°</div><div class="comp-num-val">${nroFmt}</div><div style="font-size:11px;color:#666;margin-top:4px">Fecha: ${fechaFmt}</div></div>
+  </div>
+  <div class="comp-title-bar">Recibo de pago de cuota</div>
+  <div class="comp-section">
+    <div class="comp-section-title">Datos del alumno</div>
+    <div class="comp-grid">
+      <div><div class="comp-field-label">Apellido y nombre</div><div class="comp-field-val">${pago.nombre}</div></div>
+      <div><div class="comp-field-label">DNI</div><div class="comp-field-val">${pago.dni}</div></div>
+      <div><div class="comp-field-label">Carrera</div><div class="comp-field-val">${pago.carrera}</div></div>
+      <div><div class="comp-field-label">Año de cursado</div><div class="comp-field-val">${pago.año}° año</div></div>
+    </div>
+  </div>
+  <div class="comp-section">
+    <div class="comp-section-title">Detalle del pago</div>
+    <div class="comp-grid">
+      <div><div class="comp-field-label">Concepto</div><div class="comp-field-val">${nombreCuota(pago.cuota)}</div></div>
+      <div><div class="comp-field-label">Forma de pago</div><div class="comp-field-val">${pago.forma} <span class="comp-forma-tag">${pago.forma==='Efectivo'?'EF':'TR'}</span></div></div>
+      <div><div class="comp-field-label">Monto base</div><div class="comp-field-val">${fmt(pago.monto||0)}</div></div>
+      <div><div class="comp-field-label">Recargo por mora</div><div class="comp-field-val">${pago.recargo>0?fmt(pago.recargo):'Sin recargo'}</div></div>
+    </div>
+  </div>
+  <div class="comp-monto-box">
+    <div><div class="comp-monto-label">Total abonado</div><div style="font-size:11px;color:#1a3a6b;margin-top:3px;font-style:italic">${montoLetras} pesos</div></div>
+    <div class="comp-monto-val">${fmt(pago.total)}</div>
+  </div>
+  <div class="comp-clausulas">
+    <div class="comp-clausulas-title">Condiciones de pago — Importante</div>
+    <p>1. Las cuotas deben abonarse entre los días 1 y 15 de cada mes. Pasado dicho plazo, se aplicará un recargo de $5.000 por mora.</p>
+    <p>2. El incumplimiento en el pago de <strong>dos (2) o más cuotas consecutivas o alternadas</strong> habilitará al Instituto Almafuerte a iniciar las acciones legales pertinentes para el cobro de la deuda, pudiendo ser derivada a patrocinio letrado (abogado), con los honorarios y costas correspondientes a cargo exclusivo del deudor, conforme al artículo 730 del Código Civil y Comercial de la Nación.</p>
+    <p>3. La mora en el pago de cuotas no exime al alumno de sus obligaciones académicas, ni suspende automáticamente su cursado, salvo resolución expresa de las autoridades del instituto.</p>
+    <p>4. El presente comprobante es válido únicamente como constancia del concepto aquí indicado y no implica cancelación de deudas anteriores si las hubiere.</p>
+  </div>
+  <div class="comp-footer">
+    <div class="comp-firma"><div class="comp-firma-line"></div><div class="comp-firma-label">Firma y sello autorizado</div><div class="comp-firma-label" style="margin-top:2px">Instituto Almafuerte</div></div>
+    <div class="comp-sello"><div>Generado el ${new Date().toLocaleDateString('es-AR')}</div><div style="margin-top:2px;font-weight:600">Conserve este comprobante</div></div>
+  </div>`;
+  document.getElementById('comprobante-modal').classList.add('open');
+}
+window.mostrarComprobante = mostrarComprobante;
+
+// ════════════════════════════════════
+// NUM TO LETRAS
+// ════════════════════════════════════
+function numToLetras(n){
+  const u=['','un','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve','veinte'];
+  const d=['','','veinti','treinta','cuarenta','cincuenta','sesenta','setenta','ochenta','noventa'];
+  const c=['','ciento','doscientos','trescientos','cuatrocientos','quinientos','seiscientos','setecientos','ochocientos','novecientos'];
+  if(n===100)return'cien';if(n<21)return u[n];
+  if(n<100){const dd=Math.floor(n/10);const uu=n%10;return uu===0?d[dd]:dd===2?'veinti'+u[uu]:d[dd]+' y '+u[uu];}
+  if(n<1000){const cc=Math.floor(n/100);const r=n%100;return r===0?c[cc]:c[cc]+' '+numToLetras(r);}
+  if(n<1000000){const m=Math.floor(n/1000);const r=n%1000;const pm=m===1?'mil':numToLetras(m)+' mil';return r===0?pm:pm+' '+numToLetras(r);}
+  return n.toLocaleString('es-AR');
+}
+
+// INIT
+document.getElementById('loading-screen').style.display='none';
+document.getElementById('login-screen').style.display='block';
+</script>
 </body>
 </html>
